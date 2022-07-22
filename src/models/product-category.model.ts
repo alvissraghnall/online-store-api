@@ -2,7 +2,6 @@ import {
   Entity, 
   model, 
   property, 
-  hasOne
 } from '@loopback/repository';
 
 @model()
@@ -18,4 +17,10 @@ export class ProductCategory extends Entity {
     required: true
   })
   name: string;
+  
+  @property({
+    type: 'string',
+    
+  })
+  description: string;
 }
