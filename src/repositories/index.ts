@@ -4,3 +4,6 @@ export * from './user-credentials.repository';
 export * from './user.repository';
 export * from './discount.repository';
 export * from './product.repository';
+export * from './cart.repository';
+export * from './order.repository';
+export * from './review.repository';

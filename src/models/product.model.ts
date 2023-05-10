@@ -6,13 +6,14 @@ import {
 } from '@loopback/repository';
 import {Discount} from './discount.model';
 import {ProductInventory} from './product-inventory.model';
+import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 
 @model({
   settings: {
     strictObjectIDCoercion: true,
   },
 })
-export class Product extends Entity {
+export class Product extends EntityWithIdAndTimestamps {
   @property({
     type: 'string',
     id: true,
@@ -22,19 +23,30 @@ export class Product extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: true,
+    jsonSchema: {
+      minLength: 3,
+      maxLength: 50
+    }
   })
   name: string;
 
   @property({
     type: 'string',
-    required: true
+    required: true,
+    jsonSchema: {
+      minLength: 10,
+      maxLength: 500
+    }
   })
-  desc: string;
+  description: string;
 
   @property({
     type: 'string',
-    required: true
+    required: true,
+    jsonSchema: {
+      minLength: 3,
+    }
   })
   category: string;
 
@@ -46,7 +58,10 @@ export class Product extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: true,
+    jsonSchema: {
+      minLength: 5,
+    }
   })
   image: string;
 
@@ -56,11 +71,11 @@ export class Product extends Entity {
   @hasOne(() => ProductInventory)
   inventory: ProductInventory;
 
-  @property({
-    type: 'date',
-    default: () => new Date()
-  })
-  createdAt: Date;
+  // @property({
+  //   type: 'date',
+  //   default: () => new Date()
+  // })
+  // createdAt: Date;
 }
 
 export interface ProductRelations {

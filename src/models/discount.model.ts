@@ -43,3 +43,5 @@ export class Discount extends Entity {
   })
   active: boolean;
 }
+
+export interface DiscountRelations {}
