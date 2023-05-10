@@ -18,7 +18,7 @@ import {
   SchemaObject
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
-import {User} from '../graphql-types';
+import {User} from '../models';
 import {UserRepository} from '../repositories';
 // import {genSalt, hash} from 'bcryptjs';
 import {Credentials} from "../repositories";

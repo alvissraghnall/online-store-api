@@ -1,5 +1,5 @@
 import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
-import {User} from '../graphql-types';
+import {User} from '../models';
 import {CartItem} from './cart-item.model';
 
 @model()
@@ -11,10 +11,10 @@ export class Cart extends Entity {
   })
   id?: string;
 
-  @belongsTo(() => User, { name: 'user' })
+  @belongsTo(() => User, {name: 'user'})
   userId: string;
 
-  @hasMany(() => CartItem, { name: 'cartItems' })
+  @hasMany(() => CartItem, {name: 'cartItems'})
   items: CartItem[];
 
   constructor(data?: Partial<Cart>) {

@@ -6,7 +6,7 @@ import {
   juggler,
   repository
 } from '@loopback/repository';
-import {User} from '../graphql-types';
+import {User} from '../models';
 import {UserCredentials} from '../models';
 // import {OrderRepository} from './order.repository';
 import {UserCredentialsRepository} from './user-credentials.repository';

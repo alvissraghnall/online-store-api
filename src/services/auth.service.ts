@@ -1,13 +1,12 @@
 import {UserService as LbkUserService} from '@loopback/authentication';
-import {asService, inject, injectable, service} from '@loopback/core';
+import {asService, injectable, service} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {UserProfile, securityId} from '@loopback/security';
-import {User} from '../graphql-types';
-import {Credentials, UserRepository} from '../repositories';
-import {PasswordHasherBindings} from '../util';
-import {BcryptHasher, PasswordHasher} from './hash-password.service';
 import _ from 'lodash';
+import {User} from '../models';
+import {Credentials, UserRepository} from '../repositories';
+import {BcryptHasher, PasswordHasher} from './hash-password.service';
 
 @injectable(asService(AuthService))
 export class AuthService implements LbkUserService<User, Credentials> {

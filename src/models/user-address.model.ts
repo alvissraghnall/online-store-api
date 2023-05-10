@@ -4,7 +4,7 @@ import {
   model,
   property
 } from '@loopback/repository';
-import {User} from "../graphql-types/user.type";
+import {User} from "./user.model";
 
 @model({
   settings: {

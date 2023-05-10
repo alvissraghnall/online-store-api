@@ -88,6 +88,11 @@ export class App extends BootMixin(
         dirs: ['models', 'graphql-types'],
         extensions: ['.input.js', '.model.js'],
         nested: true,
+      },
+      graphqlTypees: {
+        dirs: ['models'],
+        extensions: ['.model.js'],
+        nested: true,
       }
     };
 

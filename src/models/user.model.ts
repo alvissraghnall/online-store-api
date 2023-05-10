@@ -1,22 +1,21 @@
 
 import {
   Entity,
+  hasOne,
   model,
-  property,
-  hasMany,
-  hasOne
+  property
 } from '@loopback/repository';
 // import {Order} from './order.model';
 // import {UserCredentials} from './user-credentials.model';
 // import {ShoppingCart} from './shopping-cart.model';
-import {field, Float, ID, Int, objectType} from '@loopback/graphql';
-import {UserCredentials} from '../models';
+import {field, ID, objectType} from '@loopback/graphql';
+import {UserCredentials} from '.';
 
 @model({
   settings: {
     strictObjectIDCoercion: true,
     indexes: {
-      
+
       // uniqueEmail: {
       //   keys: {
       //     email: 1,
@@ -105,7 +104,7 @@ export class User extends Entity {
     type: "string",
     required: true,
     jsonSchema: {
-      const: { $data: '1/password' },
+      const: {$data: '1/password'},
     }
   })
   confirmPassword: string;

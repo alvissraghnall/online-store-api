@@ -19,9 +19,10 @@ import {
 } from '@loopback/rest';
 import {Product} from '../models';
 import {ProductRepository} from '../repositories';
-import {ProductService} from '../services';
+import {basicAuthorization, ProductService} from '../services';
 import {service} from '@loopback/core';
 import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
 
 @authenticate('jwt')
 export class ProductController {
@@ -39,6 +40,10 @@ export class ProductController {
         schema: getModelSchemaRef(Product)
       }
     },
+  })
+  @authorize({
+    allowedRoles: ["admin"],
+    voters: [basicAuthorization],
   })
   async create(
     @requestBody({
@@ -90,6 +95,7 @@ export class ProductController {
     description: 'Product PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async updateAll(
     @requestBody({
       content: {
@@ -124,6 +130,7 @@ export class ProductController {
   @response(204, {
     description: 'Product PATCH success',
   })
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
@@ -142,6 +149,7 @@ export class ProductController {
   @response(204, {
     description: 'Product PUT success',
   })
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async replaceById(
     @param.path.string('id') id: string,
     @requestBody() product: Product,
@@ -153,6 +161,7 @@ export class ProductController {
   @response(204, {
     description: 'Product DELETE success',
   })
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.productService.deleteById(id);
   }

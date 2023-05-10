@@ -1,7 +1,7 @@
-import {Entity, belongsTo, model, property} from '@loopback/repository';
-import {EntityWithId} from './entity-with-id.model';
-import {User} from '../graphql-types';
-import { Cart } from "./cart.model";
+import {belongsTo, model, property} from '@loopback/repository';
+import {User} from '../models';
+import {CartItem} from './cart-item.model';
+import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 
 
 @model({
@@ -9,13 +9,13 @@ import { Cart } from "./cart.model";
     strictObjectIDCoercion: true,
   }
 })
-export class Order extends EntityWithId {
+export class Order extends EntityWithIdAndTimestamps {
 
   @belongsTo(() => User)
-  userId?: string;
+  userId: string;
 
-  @belongsTo(() => Cart)
-  cartId?: string;
+  @property.array(CartItem, {required: true})
+  products: CartItem[];
 
   @property({
     type: 'string',
@@ -26,6 +26,10 @@ export class Order extends EntityWithId {
   })
   status: string;
 
+  @property({
+    type: 'date',
+  })
+  date?: string;
 
   constructor(data?: Partial<Order>) {
     super(data);

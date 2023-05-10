@@ -1,6 +1,6 @@
 import {belongsTo, model, property} from '@loopback/repository';
 import {EntityWithId, Product} from '.';
-import {User} from '../graphql-types';
+import {User} from '../models';
 
 @model({
   settings: {
@@ -32,10 +32,10 @@ export class Review extends EntityWithId {
   })
   createdAt?: Date;
 
-  @belongsTo(() => User, { keyFrom: 'userId', keyTo: 'id', name: 'user' })
+  @belongsTo(() => User, {keyFrom: 'userId', keyTo: 'id', name: 'user'})
   userId?: string;
 
-  @belongsTo(() => Product, { keyFrom: 'productId', name: 'product' })
+  @belongsTo(() => Product, {keyFrom: 'productId', name: 'product'})
   productId?: string;
 
   constructor(data?: Partial<Review>) {

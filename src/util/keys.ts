@@ -2,7 +2,7 @@
 
 import {UserService} from '@loopback/authentication';
 import {BindingKey} from '@loopback/context';
-import {User} from '../graphql-types';
+import {User} from '../models';
 import {Credentials} from '../repositories';
 import {PasswordHasher} from '../services';
 
