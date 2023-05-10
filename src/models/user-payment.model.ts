@@ -1,11 +1,10 @@
 import {
-  Entity, 
-  model, 
-  property, 
-  hasMany, 
-  hasOne
+  Entity,
+  hasOne,
+  model,
+  property
 } from '@loopback/repository';
-import { User } from "./user.model";
+import {User} from "../graphql-types/user.type";
 
 @model()
 export class UserPayment extends Entity {
@@ -14,26 +13,26 @@ export class UserPayment extends Entity {
     id: true
   })
   id: number;
-  
-  
+
+
   @hasOne(() => User)
   userId: User;
-  
+
   @property({
     type: 'string'
   })
   paymentType: string;
-  
+
   @property({
-    type: string
+    type: 'string'
   })
   provider: string;
-  
+
   @property({
     type: 'number'
   })
   accountNumber: number;
-  
+
   @property({
     type: 'timestamp'
   })

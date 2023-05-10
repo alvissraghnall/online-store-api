@@ -1,0 +1,137 @@
+
+import {
+  Entity,
+  model,
+  property,
+  hasMany,
+  hasOne
+} from '@loopback/repository';
+// import {Order} from './order.model';
+// import {UserCredentials} from './user-credentials.model';
+// import {ShoppingCart} from './shopping-cart.model';
+import {field, Float, ID, Int, objectType} from '@loopback/graphql';
+import {UserCredentials} from '../models';
+
+@model({
+  settings: {
+    strictObjectIDCoercion: true,
+    indexes: {
+      
+      // uniqueEmail: {
+      //   keys: {
+      //     email: 1,
+      //   },
+      //   options: {
+      //     unique: true,
+      //   },
+      // },
+    },
+  },
+})
+@objectType({description: 'Object representing user information'})
+export class User extends Entity {
+  @field(type => ID)
+  @property({
+    type: 'string',
+    id: true,
+    generated: true
+  })
+  id: string;
+
+  @field(() => String)
+  @property({
+    type: 'string',
+    required: true,
+    index: {
+      unique: true,
+    },
+    jsonSchema: {
+      format: 'email',
+      minLength: 5,
+    }
+  })
+  email: string;
+
+  @field(() => String)
+  @property({
+    type: 'string',
+    required: true,
+    jsonSchema: {
+      minLength: 3,
+    }
+  })
+  firstName: string;
+
+  @field(() => String)
+  @property({
+    type: 'string',
+    required: true,
+    jsonSchema: {
+      minLength: 3,
+    }
+  })
+  lastName: string;
+
+  @field(() => String)
+  @property({
+    type: 'string',
+    required: true,
+    jsonSchema: {
+      minLength: 10,
+    }
+  })
+  address: string;
+
+  @field(() => String)
+  @property({
+    type: "string",
+    required: true,
+    jsonSchema: {
+      minLength: 5,
+    }
+  })
+  phone: string;
+
+  @property({
+    type: "string",
+    required: false,
+    jsonSchema: {
+      minLength: 8,
+    }
+  })
+  password: string;
+
+  @property({
+    type: "string",
+    required: true,
+    jsonSchema: {
+      const: { $data: '1/password' },
+    }
+  })
+  confirmPassword: string;
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+  })
+  roles?: string[];
+
+
+  @hasOne(() => UserCredentials)
+  userCredentials: UserCredentials;
+
+
+  // @hasMany(() => Order)
+  // orders: Order[];
+
+  // @hasOne(() => ShoppingCart)
+  // shoppingCart: ShoppingCart;
+
+  constructor(data?: Partial<User>) {
+    super(data);
+  }
+}
+
+export interface UserRelations {
+  // describe navigational properties here
+}

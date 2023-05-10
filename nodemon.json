@@ -1,0 +1,14 @@
+{
+  "verbose": true,
+  "ignore": [
+    "node_modules",
+    ".git",
+    "__tests__",
+    "dist"
+  ],
+  "watch": [
+    "src"
+  ],
+  "exec": "yarn start",
+  "ext": "ts"
+}

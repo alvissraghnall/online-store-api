@@ -1,17 +1,17 @@
 import {
-  Entity,
   model,
+  Entity,
   property,
   hasOne
 } from '@loopback/repository';
+import {Discount} from './discount.model';
 
 @model({
   settings: {
-    hiddenProperties: ['id'],
     strictObjectIDCoercion: true,
-  }
+  },
 })
-export class Discount extends Entity {
+export default class Product extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -21,25 +21,34 @@ export class Discount extends Entity {
 
   @property({
     type: 'string',
-    required: false,
-  })
-  description?: string;
-
-  @property({
-    type: 'string',
     required: true
   })
   name: string;
 
   @property({
+    type: 'string',
+    required: true
+  })
+  desc: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
+  category: string;
+
+  @property({
     type: 'number',
     required: true
   })
-  percentage: number;
+  price: number;
+
+  @hasOne(() => Discount)
+  discount: Discount;
 
   @property({
-    type: 'boolean',
-    required: true
+    type: 'date',
+    default: () => new Date()
   })
-  active: boolean;
+  createdAt: Date;
 }

@@ -17,9 +17,9 @@ export async function main(options: ApplicationConfig = {}) {
 
 if (require.main === module) {
   const graphqlCfg: GraphQLServerOptions = {
-    apollo: {
-      subscriptions: '/subscriptions',
-    },
+    // apollo: {
+    //   // subscriptions: '/subscriptions',
+    // },
     asMiddlewareOnly: true,
   };
   // Run the application
@@ -37,6 +37,13 @@ if (require.main === module) {
         // useful when used with OpenAPI-to-GraphQL to locate your application
         setServersFromRequest: true,
       },
+      cors: {
+        origin: [],
+        optionsSuccessStatus: 204,
+        maxAge: 86400,
+        credentials: true,
+      }
+
     },
     graphql: graphqlCfg,
   };

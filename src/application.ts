@@ -1,8 +1,15 @@
+import {AuthenticationComponent} from '@loopback/authentication';
+import {
+  JWTAuthenticationComponent,
+  TokenServiceBindings,
+} from '@loopback/authentication-jwt';
+// import { AuthenticationComponent } from '@loopback/authentication';
+import {AuthorizationComponent} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {GraphQLBindings, GraphQLComponent} from '@loopback/graphql';
 import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
+import {RestApplication, RestBindings} from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent
@@ -11,6 +18,10 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {sampleRecipes} from './sample-recipes';
 import {MySequence} from './sequence';
+import {MongoDataSource} from './datasources';
+import {PasswordHasherBindings} from './util';
+import crypto from 'crypto';
+import {JWTService} from './services';
 
 export {ApplicationConfig};
 
@@ -23,22 +34,41 @@ export class App extends BootMixin(
     this.sequence(MySequence);
 
     this.component(GraphQLComponent);
+    this.component(JWTAuthenticationComponent);
+    this.component(AuthenticationComponent);
+    this.component(AuthorizationComponent);
+    this.dataSource(MongoDataSource, );
+
     const server = this.getSync(GraphQLBindings.GRAPHQL_SERVER);
+    // To register one or more middlewares as per https://typegraphql.com/docs/middlewares.html
+    server.middleware(
+      (resolver, next) => next()
+    );
+
     this.expressMiddleware('middleware.express.GraphQL', server.expressApp);
 
     // It's possible to register a graphql context resolver
     this.bind(GraphQLBindings.GRAPHQL_CONTEXT_RESOLVER).to(context => {
       return {...context};
     });
+    this.bind(RestBindings.REQUEST_BODY_PARSER_OPTIONS).to({
+      $data: true,
+      validation: {
+        $data: true,
+        allErrors: true,
+      }
+    })
 
     this.bind('recipes').to([...sampleRecipes]);
 
     this.static('/', path.join(__dirname, '../public'));
 
-    this.configure(RestExplorerBindings.COMPONENT).to({
-      path: '/explorer',
-    });
-    this.component(RestExplorerComponent);
+    // this.configure(RestExplorerBindings.COMPONENT).to({
+    //   path: '/explorer',
+    // });
+    // this.component(RestExplorerComponent);
+
+    this.setupBindings();
 
     this.projectRoot = __dirname;
 
@@ -51,9 +81,25 @@ export class App extends BootMixin(
       graphqlResolvers: {
         // Customize ControllerBooter Conventions here
         dirs: ['graphql-resolvers'],
-        extensions: ['.js'],
+        extensions: ['.resolver.js'],
         nested: true,
       },
+      models: {
+        dirs: ['models', 'graphql-types'],
+        extensions: ['.input.js', '.model.js'],
+        nested: true,
+      }
     };
+
+  }
+
+
+  setupBindings (): void {
+    this.bind(PasswordHasherBindings.ROUNDS).to(10);
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+
+    const secret =
+      process.env.JWT_SECRET ?? crypto.randomBytes(32).toString('hex');
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(secret);
   }
 }
