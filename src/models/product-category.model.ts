@@ -1,26 +1,37 @@
 import {
-  Entity, 
-  model, 
-  property, 
+  Entity,
+  belongsTo,
+  model,
+  property,
 } from '@loopback/repository';
 
-@model()
+@model({
+  settings: {
+    strictObjectIDCoercion: true,
+  }
+})
 export class ProductCategory extends Entity {
   @property({
     id: true,
-    type: 'number'
+    type: 'string',
+    generated: true
   })
-  id: number;
-  
+  id: string;
+
   @property({
     type: 'string',
     required: true
   })
   name: string;
-  
+
   @property({
     type: 'string',
-    
   })
   description: string;
+
+  @belongsTo(() => ProductCategory, {
+    keyTo: 'id',
+    name: 'parentCategory'
+  })
+  parentId: string;
 }

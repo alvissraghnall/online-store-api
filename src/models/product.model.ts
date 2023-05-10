@@ -5,13 +5,14 @@ import {
   hasOne
 } from '@loopback/repository';
 import {Discount} from './discount.model';
+import {ProductInventory} from './product-inventory.model';
 
 @model({
   settings: {
     strictObjectIDCoercion: true,
   },
 })
-export default class Product extends Entity {
+export class Product extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -43,8 +44,17 @@ export default class Product extends Entity {
   })
   price: number;
 
+  @property({
+    type: 'string',
+    required: true
+  })
+  image: string;
+
   @hasOne(() => Discount)
   discount: Discount;
+
+  @hasOne(() => ProductInventory)
+  inventory: ProductInventory;
 
   @property({
     type: 'date',
@@ -52,3 +62,9 @@ export default class Product extends Entity {
   })
   createdAt: Date;
 }
+
+export interface ProductRelations {
+  // describe navigational properties here
+}
+
+export type ProductWithRelations = Product & ProductRelations;

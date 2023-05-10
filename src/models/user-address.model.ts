@@ -6,17 +6,20 @@ import {
 } from '@loopback/repository';
 import {User} from "../graphql-types/user.type";
 
-@model()
+@model({
+  settings: {
+    strictObjectIDCoercion: true,
+  }
+})
 export class UserAddress extends Entity {
   @property({
-    type: 'int',
+    type: 'string',
     id: true
   })
-  id: number;
-
+  id: string;
 
   @hasOne(() => User)
-  userId: User;
+  user: User;
 
   @property({
     type: 'string'
@@ -44,7 +47,7 @@ export class UserAddress extends Entity {
   country: string;
 
   @property({
-    type: 'int'
+    type: 'number'
   })
   postalCode: number;
 }
