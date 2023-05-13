@@ -1,15 +1,10 @@
-import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
+import {belongsTo, hasMany, model, property} from '@loopback/repository';
 import {User} from '../models';
 import {CartItem} from './cart-item.model';
+import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 
 @model()
-export class Cart extends Entity {
-  @property({
-    type: 'string',
-    id: true,
-    generated: true,
-  })
-  id?: string;
+export class Cart extends EntityWithIdAndTimestamps {
 
   @belongsTo(() => User, {name: 'user'})
   userId: string;
