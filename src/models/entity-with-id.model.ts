@@ -6,6 +6,9 @@ export class EntityWithId extends Entity {
     type: 'string',
     id: true,
     generated: true,
+    mongodb: {
+      dataType: 'ObjectId'
+    }
   })
   id: string;
 

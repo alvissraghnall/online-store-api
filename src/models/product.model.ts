@@ -18,6 +18,7 @@ export class Product extends EntityWithIdAndTimestamps {
     type: 'string',
     id: true,
     generated: true,
+    mongodb: {dataType: 'ObjectId'}
   })
   id: string;
 

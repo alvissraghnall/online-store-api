@@ -167,28 +167,28 @@ export class CartController {
     await this.cartService.deleteById(id);
   }
 
-  // @post("/carts/add-item")
-  // @response(200, {
-  //   description: 'User shopping cart item created.',
-  //   content: {
-  //     'application/json': {
-  //       schema: getModelSchemaRef(CartItem, {includeRelations: true}),
-  //     },
-  //   },
-  // })
-  // @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
-  // async addItem (
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(CartItem, {
-  //           title: 'NewCartItem',
-  //           exclude: ['id'],
-  //         }),
-  //       },
-  //     },
-  //   }) item: CartItem
-  // ) {
+  @post("/carts/add-item")
+  @response(200, {
+    description: 'User shopping cart item created.',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(CartItem, {includeRelations: true}),
+      },
+    },
+  })
+  @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
+  async addItem (
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(CartItem, {
+            title: 'NewCartItem',
+            exclude: ['id'],
+          }),
+        },
+      },
+    }) item: CartItem
+  ) {
 
-  // }
+  }
 }

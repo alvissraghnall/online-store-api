@@ -1,10 +1,9 @@
 {
-  "name": "graphql-lb4-backend",
+  "name": "online-store-api",
   "version": "0.0.1",
-  "description": "Documents",
+  "description": "Online Store API",
   "keywords": [
-    "loopback-application",
-    "loopback"
+    "api"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,16 +31,16 @@
     "preopenapi-spec": "npm run build",
     "openapi-spec": "node ./dist/openapi-spec",
     "prestart": "npm run rebuild",
-    "start": "node -r source-map-support/register .",
+    "start": "node -r dotenv/config -r source-map-support/register .",
     "start:dev": "nodemon --inspect",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "rebuild": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/alvissraghnall/online-store-api"
   },
-  "author": "Jose David <mq.josedavid@gmail.com>",
+  "author": "Alviss Raghnall <isiomastewart@gmail.com>",
   "license": "",
   "files": [
     "README.md",

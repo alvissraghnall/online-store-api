@@ -123,6 +123,7 @@ export class ProductController {
     @param.path.string('id') id: string,
     @param.filter(Product, {exclude: 'where'}) filter?: FilterExcludingWhere<Product>
   ): Promise<Product> {
+    // console.log(id);
     return this.productService.findById(id/*, filter*/);
   }
 

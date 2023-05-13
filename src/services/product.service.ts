@@ -1,5 +1,5 @@
 import {injectable, /* inject, */ BindingScope} from '@loopback/core';
-import {Filter, repository} from '@loopback/repository';
+import {Filter, ObjectType, repository} from '@loopback/repository';
 import {ProductRepository} from '../repositories';
 import {Product} from '../models';
 import {HttpErrors} from '@loopback/rest';

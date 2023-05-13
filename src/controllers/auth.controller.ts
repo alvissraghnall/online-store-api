@@ -81,7 +81,7 @@ export class AuthController {
         'application/json': {
           schema: getModelSchemaRef(User, {
             title: 'NewUser',
-            exclude: ['id'],
+            exclude: ['id', 'roles'],
           }),
         },
       }, required: true
