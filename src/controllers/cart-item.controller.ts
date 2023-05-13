@@ -40,28 +40,58 @@ export class CartItemController {
    * @param userId User id
    * @param cart Shopping cart
    */
-  @post("/carts/item")
-  @response(200, {
-    description: 'User shopping cart item created.',
+  @post("/carts/{cartId}/items")
+  @response(201, {
+    description: "Add item to cart",
     content: {
       'application/json': {
-        schema: getModelSchemaRef(CartItem, {includeRelations: true}),
-      },
-    },
+        schema: getModelSchemaRef(CartItem),
+      }
+    }
   })
   @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
-  async addItem (
+  async createCartItem(
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(CartItem, {
-            title: 'NewCartItem',
+            title: 'NewCart',
             exclude: ['id'],
+            includeRelations: true
           }),
         },
       },
-    }) item: CartItem
-  ) {
+    }) cartItem: Omit<CartItem, "id">,
+    @param.path.string('productId') productId: string,
+  ): Promise<CartItem> {
 
+    const cartItemExists = await this.cartItemService.cartItemExists(productId);
+
+    if (cartItemExists) throw new HttpErrors.Conflict("Cart Item already exists.");
+
+    return this.cartItemService.addItemToCart(
+      productId,
+      cartItem.quantity
+    );
+
+    
+  }
+
+  @get("/carts/{cartId}/items")
+  @response(200, {
+    description: "Get item from cart",
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(CartItem, {
+          includeRelations: true
+        }),
+      }
+    }
+  })
+  @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
+  async getCartItem(
+    @param.path.string('cartId') cartId: string,
+  ): Promise<CartItem> {
+    return this.cartItemService.
   }
 }

@@ -9,7 +9,7 @@ export class CartItemService {
     public cartItemRepo: CartItemRepository,
   ) {}
 
-  async addItemToCart(productId: string, quantity: number, userId: string): Promise<CartItem> {
+  async addItemToCart(productId: string, quantity: number): Promise<CartItem> {
     const product: Product = await this.cartItemRepo.product(productId)
       .get();
     const cartItem = new CartItem({
@@ -17,6 +17,8 @@ export class CartItemService {
     });
     return this.cartItemRepo.create(cartItem);
   }
+
+  async getCartItems () {}
 
   async updateCartItem(cartItemId: string, data: Partial<CartItem>): Promise<void> {
     await this.cartItemRepo.updateById(cartItemId, data);
@@ -33,6 +35,6 @@ export class CartItemService {
       return !!product;
     } catch (error) {
       return false;
-    } 
+    }
   }
 }
