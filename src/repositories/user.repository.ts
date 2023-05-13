@@ -2,15 +2,17 @@
 import {Constructor, Getter, inject} from '@loopback/core';
 import {
   DefaultCrudRepository,
+  HasManyRepositoryFactory,
   HasOneRepositoryFactory,
   juggler,
   repository
 } from '@loopback/repository';
-import {User} from '../models';
+import {User, Order} from '../models';
 import {UserCredentials} from '../models';
 // import {OrderRepository} from './order.repository';
 import {UserCredentialsRepository} from './user-credentials.repository';
 import {TimeStampRepositoryMixin} from '../mixins/timestamp.mixin';
+import {OrderRepository} from '.';
 
 export type Credentials = {
   email: string;
@@ -25,7 +27,7 @@ export class UserRepository extends TimeStampRepositoryMixin<
     typeof User.prototype.id>
   >
 >(DefaultCrudRepository) {
-  // public orders: HasManyRepositoryFactory<Order, typeof User.prototype.id>;
+  public readonly orders: HasManyRepositoryFactory<Order, typeof User.prototype.id>;
 
   public readonly userCredentials: HasOneRepositoryFactory<
     UserCredentials,
@@ -33,8 +35,8 @@ export class UserRepository extends TimeStampRepositoryMixin<
   >;
 
   constructor(
-    @inject('datasources.mongo') dataSource: juggler.DataSource,
-    // @repository(OrderRepository) protected orderRepository: OrderRepository,
+    @inject('datasources.mongo') readonly dataSource: juggler.DataSource,
+    @repository(OrderRepository) protected orderRepository: OrderRepository,
     @repository.getter('UserCredentialsRepository')
     protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>,
   ) {
@@ -43,10 +45,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
       'userCredentials',
       userCredentialsRepositoryGetter,
     );
-    // this.orders = this.createHasManyRepositoryFactoryFor(
-    //   'orders',
-    //   async () => orderRepository,
-    // );
+    this.orders = this.createHasManyRepositoryFactoryFor(
+      'orders',
+      async () => orderRepository,
+    );
   }
 
   async findCredentials(

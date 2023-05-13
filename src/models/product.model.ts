@@ -14,13 +14,6 @@ import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
   },
 })
 export class Product extends EntityWithIdAndTimestamps {
-  @property({
-    type: 'string',
-    id: true,
-    generated: true,
-    mongodb: {dataType: 'ObjectId'}
-  })
-  id: string;
 
   @property({
     type: 'string',

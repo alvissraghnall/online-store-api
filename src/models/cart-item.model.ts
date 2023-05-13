@@ -1,9 +1,10 @@
 import {hasOne, model, property} from '@loopback/repository';
 import {Product} from './product.model';
-import {EntityWithId} from './entity-with-id.model';
+// import {EntityWithId} from './entity-with-id.model';
+import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 
 @model({settings: {strictObjectIDCoercion: true}})
-export class CartItem extends EntityWithId {
+export class CartItem extends EntityWithIdAndTimestamps {
 
   @hasOne(() => Product)
   product: Product;
