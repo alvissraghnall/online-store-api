@@ -17,10 +17,10 @@ export class CartRepository extends TimeStampRepositoryMixin<
     typeof User.prototype.id
   >;
 
-  public readonly items: HasManyRepositoryFactory<
-    CartItem,
-    typeof CartItem.prototype.id
-  >;
+  // public readonly items: HasManyRepositoryFactory<
+  //   CartItem,
+  //   typeof CartItem.prototype.productId
+  // >;
 
   constructor(
     @inject('datasources.mongo') dataSource: MongoDataSource,
@@ -34,9 +34,9 @@ export class CartRepository extends TimeStampRepositoryMixin<
       userRepositoryGetter,
     );
 
-    this.items = this.createHasManyRepositoryFactoryFor(
-      'items',
-      cartItemsRepositoryGetter,
-    );
+    // this.items = this.createHasManyRepositoryFactoryFor(
+    //   'items',
+    //   cartItemsRepositoryGetter,
+    // );
   }
 }

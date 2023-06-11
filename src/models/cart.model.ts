@@ -9,8 +9,8 @@ export class Cart extends EntityWithIdAndTimestamps {
   @belongsTo(() => User, {name: 'user'})
   userId: string;
 
-  @hasMany(() => CartItem, {name: 'cartItems'})
-  items: CartItem[];
+  @property.array(CartItem)
+  items?: CartItem[];
 
   constructor(data?: Partial<Cart>) {
     super(data);

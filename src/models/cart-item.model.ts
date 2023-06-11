@@ -1,13 +1,19 @@
 import {hasOne, model, property} from '@loopback/repository';
 import {Product} from './product.model';
 // import {EntityWithId} from './entity-with-id.model';
-import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
+import {EntityWithTimestamps} from './entity-with-timestamps.model';
 
 @model({settings: {strictObjectIDCoercion: true}})
-export class CartItem extends EntityWithIdAndTimestamps {
+export class CartItem extends EntityWithTimestamps {
 
-  @hasOne(() => Product)
-  product: Product;
+  @property({
+    id: true,
+    mongodb: {
+      dataType: 'ObjectId'
+    },
+    type: 'string'
+  })
+  productId: string;
 
   @property({
     type: 'number',

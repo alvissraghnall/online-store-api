@@ -7,14 +7,14 @@ import {ProductRepository} from '.';
 
 export class CartItemRepository extends TimeStampRepositoryMixin<
   CartItem,
-  typeof CartItem.prototype.id,
-  Constructor<DefaultCrudRepository<CartItem, typeof CartItem.prototype.id, CartItemRelations>>
+  typeof CartItem.prototype.productId,
+  Constructor<DefaultCrudRepository<CartItem, typeof CartItem.prototype.productId, CartItemRelations>>
 >(DefaultCrudRepository) {
 
-  public readonly product: HasOneRepositoryFactory<
-    Product,
-    typeof Product.prototype.id
-  >;
+  // public readonly product: HasOneRepositoryFactory<
+  //   Product,
+  //   typeof Product.prototype.id
+  // >;
 
   constructor(
     @inject('datasources.mongo') readonly dataSource: MongoDataSource,
@@ -22,9 +22,9 @@ export class CartItemRepository extends TimeStampRepositoryMixin<
     getProductRepository: Getter<ProductRepository>,
   ) {
     super(CartItem, dataSource);
-    this.product = this.createHasOneRepositoryFactoryFor(
-      'product',
-      getProductRepository,
-    );
+    // this.product = this.createHasOneRepositoryFactoryFor(
+    //   'product',
+    //   getProductRepository,
+    // );
   }
 }
