@@ -82,14 +82,14 @@ export class CartService {
   async find(filter?: Filter<Cart>): Promise<Cart[]> {
     return this.cartRepository.find({
       ...filter,
-      include: ['userId']
+      include: ['user']
     });
   }
 
   async findById(id: string, filter?: FilterExcludingWhere<Cart>): Promise<Cart> {
     const cart = await this.cartRepository.findById(id, {
       ...filter,
-      include: ['userId']
+      include: ['user']
     });
     if (!cart) {
       throw new HttpErrors.NotFound(`Cart not found: ${id}`);
