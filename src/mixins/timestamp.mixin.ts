@@ -1,5 +1,5 @@
 import {Constructor} from '@loopback/context';
-import {Entity, EntityCrudRepository, DataObject, Where, Count, Options} from '@loopback/repository';
+import {Entity, EntityCrudRepository, DataObject, Where, Count, Options, AnyObject} from '@loopback/repository';
 
 export function TimeStampRepositoryMixin<
   E extends Entity & {createdAt?: Date; updatedAt?: Date},
@@ -20,6 +20,17 @@ export function TimeStampRepositoryMixin<
     ): Promise<Count> {
       data.updatedAt = new Date();
       return super.updateAll(data, where, options);
+    }
+
+    async update(entity: DataObject<E>, options?: AnyObject | undefined): Promise<void> {
+      entity.updatedAt = new Date();
+      return super.update(entity, options)
+    }
+
+    async save(entity: DataObject<E>, options?: AnyObject | undefined): Promise<E> {
+      entity.updatedAt = new Date();
+      if(!entity.getId) entity.createdAt = new Date();
+      return super.save(entity, options);
     }
 
     async replaceById(

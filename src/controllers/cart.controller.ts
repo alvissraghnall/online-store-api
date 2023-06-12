@@ -50,7 +50,7 @@ export class CartController {
         'application/json': {
           schema: getModelSchemaRef(Cart, {
             title: 'NewCart',
-            exclude: ['id'],
+            exclude: ['id', 'userId'],
           }),
         },
       },
@@ -167,7 +167,7 @@ export class CartController {
     await this.cartService.deleteById(id);
   }
 
-  @post("/carts/add-item")
+  @post("/carts/{id}/add-item")
   @response(200, {
     description: 'User shopping cart item created.',
     content: {
@@ -183,12 +183,15 @@ export class CartController {
         'application/json': {
           schema: getModelSchemaRef(CartItem, {
             title: 'NewCartItem',
-            exclude: ['id'],
           }),
         },
       },
-    }) item: CartItem
+    }) item: CartItem,
+    @param.path.string('id') cartId: string,
+    @inject(SecurityBindings.USER) loggedInUserProfile: UserProfile,
   ) {
-
+    return this.cartService.addItem(cartId, item.productId, loggedInUserProfile);
   }
 }
+> online-store-api@0.0.1 build
+> lb-tsc

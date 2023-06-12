@@ -36,7 +36,7 @@ export class UserRepository extends TimeStampRepositoryMixin<
 
   constructor(
     @inject('datasources.mongo') readonly dataSource: juggler.DataSource,
-    @repository(OrderRepository) protected orderRepository: OrderRepository,
+    @repository('OrderRepository') public readonly orderRepository: OrderRepository,
     @repository.getter('UserCredentialsRepository')
     protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>,
   ) {
@@ -45,10 +45,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
       'userCredentials',
       userCredentialsRepositoryGetter,
     );
-    this.orders = this.createHasManyRepositoryFactoryFor(
-      'orders',
-      async () => orderRepository,
-    );
+    // this.orders = this.createHasManyRepositoryFactoryFor(
+    //   'orders',
+    //   async () => orderRepository,
+    // );
   }
 
   async findCredentials(

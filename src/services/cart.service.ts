@@ -22,16 +22,21 @@ export class CartService {
     if (existingCart) {
       throw new HttpErrors.Conflict('User already has a cart!');
     }
+    cart.userId = user[securityId];
     return this.cartRepository.create(cart);
   }
 
-  async addItem(cartId: string, productId: string): Promise<Cart> {
+  async addItem(cartId: string, productId: string, user: UserProfile): Promise<Cart> {
     const cart = await this.cartRepository.findById(cartId, {
       include: ['items'],
     });
 
     if (!cart) {
       throw new HttpErrors.NotFound(`Cart not found: ${cartId}`);
+    }
+
+    if(cart.userId === user[securityId]) {
+      throw new HttpErrors[403](`Trying to access cart belonging to another customer`);
     }
 
     const product = await this.productService.findById(productId);
@@ -75,11 +80,17 @@ export class CartService {
   }
 
   async find(filter?: Filter<Cart>): Promise<Cart[]> {
-    return this.cartRepository.find(filter);
+    return this.cartRepository.find({
+      ...filter,
+      include: ['userId']
+    });
   }
 
   async findById(id: string, filter?: FilterExcludingWhere<Cart>): Promise<Cart> {
-    const cart = await this.cartRepository.findById(id, filter);
+    const cart = await this.cartRepository.findById(id, {
+      ...filter,
+      include: ['userId']
+    });
     if (!cart) {
       throw new HttpErrors.NotFound(`Cart not found: ${id}`);
     }
