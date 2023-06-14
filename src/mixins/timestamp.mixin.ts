@@ -1,5 +1,6 @@
 import {Constructor} from '@loopback/context';
 import {Entity, EntityCrudRepository, DataObject, Where, Count, Options, AnyObject} from '@loopback/repository';
+import {Cart} from '../models';
 
 export function TimeStampRepositoryMixin<
   E extends Entity & {createdAt?: Date; updatedAt?: Date},
@@ -29,7 +30,8 @@ export function TimeStampRepositoryMixin<
 
     async save(entity: DataObject<E>, options?: AnyObject | undefined): Promise<E> {
       entity.updatedAt = new Date();
-      if(!entity.getId) entity.createdAt = new Date();
+      if(!(entity.getId as () => any)?.()) entity.createdAt = new Date();
+
       return super.save(entity, options);
     }
 

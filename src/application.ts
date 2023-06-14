@@ -107,6 +107,6 @@ export class App extends BootMixin(
     const secret =
       process.env.JWT_SECRET ?? crypto.randomBytes(32).toString('hex');
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(secret);
-    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to('86400');
+    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to('864000');
   }
 }

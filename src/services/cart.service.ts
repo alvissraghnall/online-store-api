@@ -27,9 +27,7 @@ export class CartService {
   }
 
   async addItem(cartId: string, productId: string, user: UserProfile): Promise<Cart> {
-    const cart = await this.cartRepository.findById(cartId, {
-      include: ['items'],
-    });
+    const cart = await this.cartRepository.findById(cartId);
 
     if (!cart) {
       throw new HttpErrors.NotFound(`Cart not found: ${cartId}`);
@@ -48,8 +46,11 @@ export class CartService {
 
     if (existingItem) {
       existingItem.quantity++;
+      existingItem.updatedAt = new Date();
     } else {
       const newItem: CartItem = new CartItem({productId: product.id, quantity: 1});
+      newItem.createdAt = new Date();
+      newItem.updatedAt = new Date();
       cart.items = [...(cart.items || []), newItem]; // Add the new item to the cart
     }
 
@@ -82,7 +83,9 @@ export class CartService {
   async find(filter?: Filter<Cart>): Promise<Cart[]> {
     return this.cartRepository.find({
       ...filter,
-      include: ['user']
+      include: [{
+        relation: 'user'
+      }]
     });
   }
 

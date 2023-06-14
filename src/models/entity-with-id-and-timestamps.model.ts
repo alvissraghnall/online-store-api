@@ -12,7 +12,7 @@ export class EntityWithIdAndTimestamps extends EntityWithId {
 
   @property({
     type: 'date',
-    // default: () => new Date()
+    default: () => new Date()
   })
   updatedAt: Date;
 

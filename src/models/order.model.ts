@@ -21,7 +21,8 @@ export class Order extends EntityWithIdAndTimestamps {
     type: 'string',
     required: true,
     jsonSchema: {
-      enum: ['pending', 'processing', 'completed', 'cancelled']
+      enum: ['pending', 'processing', 'completed', 'cancelled'],
+      default: 'pending'
     },
   })
   status: string;

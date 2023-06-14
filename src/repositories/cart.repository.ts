@@ -34,6 +34,10 @@ export class CartRepository extends TimeStampRepositoryMixin<
       userRepositoryGetter,
     );
 
+    this.registerInclusionResolver('user',
+      this.user.inclusionResolver
+    );
+
     // this.items = this.createHasManyRepositoryFactoryFor(
     //   'items',
     //   cartItemsRepositoryGetter,

@@ -167,9 +167,9 @@ export class CartController {
     await this.cartService.deleteById(id);
   }
 
-  @post("/carts/{id}/add-item")
+  @put("/carts/{id}/add-item")
   @response(200, {
-    description: 'User shopping cart item created.',
+    description: 'User shopping cart item added.',
     content: {
       'application/json': {
         schema: getModelSchemaRef(CartItem, {includeRelations: true}),
@@ -183,6 +183,7 @@ export class CartController {
         'application/json': {
           schema: getModelSchemaRef(CartItem, {
             title: 'NewCartItem',
+            exclude: ['quantity']
           }),
         },
       },
