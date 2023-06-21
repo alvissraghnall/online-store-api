@@ -38,7 +38,7 @@ if (require.main === module) {
         setServersFromRequest: true,
       },
       cors: {
-        origin: [],
+        origin: "*",
         optionsSuccessStatus: 204,
         maxAge: 86400,
         credentials: true,

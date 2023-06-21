@@ -70,6 +70,7 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "loopback-connector-mongodb": "^7.0.0-alpha.1",
+    "loopback-connector-openapi": "^6.2.0",
     "loopback-connector-rest": "^4.0.3",
     "nodemailer": "^6.9.1",
     "tslib": "^2.5.0",
