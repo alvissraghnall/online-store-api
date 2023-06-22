@@ -18,11 +18,11 @@ import {
   SchemaObject
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
-import {User} from '../models';
-import {UserRepository} from '../repositories';
+import {Cart, User} from '../models';
+import {CartRepository, UserRepository} from '../repositories';
 // import {genSalt, hash} from 'bcryptjs';
 import {Credentials} from "../repositories";
-import {AuthService, BCryptService} from '../services';
+import {AuthService, BCryptService, CartService} from '../services';
 
 const UserSchema: SchemaObject = {
   type: 'object',
@@ -61,6 +61,7 @@ export class AuthController {
     // @inject(PasswordHasherBindings.PASSWORD_HASHER)
     // public passwordHasher: PasswordHasher,
     @service(BCryptService) public bcryptService: BCryptService,
+    @repository(CartRepository) public cartRepository: CartRepository,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: TokenService,
     @inject(UserServiceBindings.USER_SERVICE)
@@ -81,7 +82,7 @@ export class AuthController {
         'application/json': {
           schema: getModelSchemaRef(User, {
             title: 'NewUser',
-            exclude: ['id', 'roles'],
+            exclude: ['id', 'roles', 'createdAt', 'updatedAt'],
           }),
         },
       }, required: true
@@ -91,9 +92,14 @@ export class AuthController {
     console.log(user);
     user.roles = ['customer']
     try {
-      return await this.authService.createUser(
+      const newUser = await this.authService.createUser(
         user as User
       );
+      const newUserCart: Pick<Partial<Cart>, 'items' | 'userId'> = { items: [] };
+      newUserCart.userId = newUser.id;
+      this.cartRepository.create(newUserCart);
+      // console.log();
+      return newUser;
     } catch (error) {
       if (error.code === 11000 && error.message.includes('index: email')) {
         throw new HttpErrors.Conflict('Email value is already taken');

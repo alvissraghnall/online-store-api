@@ -1,4 +1,4 @@
-
+import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 import {
   Entity,
   hasOne,
@@ -28,7 +28,7 @@ import {UserCredentials} from '.';
   },
 })
 @objectType({description: 'Object representing user information'})
-export class User extends Entity {
+export class User extends EntityWithIdAndTimestamps {
   @field(type => ID)
   @property({
     type: 'string',
