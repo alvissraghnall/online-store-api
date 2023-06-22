@@ -183,7 +183,7 @@ export class CartController {
         'application/json': {
           schema: getModelSchemaRef(CartItem, {
             title: 'NewCartItem',
-            exclude: ['quantity']
+            optional: ['quantity']
           }),
         },
       },
@@ -191,7 +191,7 @@ export class CartController {
     @param.path.string('id') cartId: string,
     @inject(SecurityBindings.USER) loggedInUserProfile: UserProfile,
   ) {
-    return this.cartService.addItem(cartId, item.productId, loggedInUserProfile);
+    return this.cartService.addItem(cartId, item, loggedInUserProfile);
   }
 }
 

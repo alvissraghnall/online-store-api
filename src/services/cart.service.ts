@@ -26,7 +26,7 @@ export class CartService {
     return this.cartRepository.create(cart);
   }
 
-  async addItem(cartId: string, productId: string, user: UserProfile): Promise<Cart> {
+  async addItem(cartId: string, cartItem: CartItem, user: UserProfile): Promise<Cart> {
     const cart = await this.cartRepository.findById(cartId);
 
     if (!cart) {
@@ -37,20 +37,20 @@ export class CartService {
       throw new HttpErrors[403](`Trying to access cart belonging to another customer`);
     }
 
-    const product = await this.productService.findById(productId);
+    const product = await this.productService.findById(cartItem.productId);
     if (!product) {
-      throw new HttpErrors.NotFound(`Product not found: ${productId}`);
+      throw new HttpErrors.NotFound(`Product not found: ${cartItem.productId}`);
     }
 
     const existingItem = cart.items?.find((item) => item.productId === product.id);
 
     if (existingItem) {
-      existingItem.quantity++;
+      existingItem.quantity += cartItem.quantity ?? 1;
       existingItem.updatedAt = new Date();
     } else {
-      const newItem: CartItem = new CartItem({productId: product.id, quantity: 1});
-      newItem.createdAt = new Date();
-      newItem.updatedAt = new Date();
+      const newItem: CartItem = new CartItem({productId: product.id, quantity: cartItem.quantity || 1});
+      newItem.createdAt = newItem.updatedAt = new Date();
+      //  new Date();
       cart.items = [...(cart.items || []), newItem]; // Add the new item to the cart
     }
 
