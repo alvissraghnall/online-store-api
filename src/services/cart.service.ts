@@ -100,6 +100,16 @@ export class CartService {
     return cart;
   }
 
+  async findByUser (user: UserProfile) {
+    const cart = await this.cartRepository.findOne({
+      where: { userId: user[securityId] },
+
+    });
+    if (!cart) throw new HttpErrors.NotFound(`Cart for user: ${user[securityId]} not found!`);
+
+    return cart;
+  }
+
   async updateById(id: string, cart: Partial<Cart>): Promise<void> {
     await this.cartRepository.updateById(id, cart);
   }

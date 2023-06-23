@@ -61,7 +61,6 @@ export class AuthController {
     // @inject(PasswordHasherBindings.PASSWORD_HASHER)
     // public passwordHasher: PasswordHasher,
     @service(BCryptService) public bcryptService: BCryptService,
-    @repository(CartRepository) public cartRepository: CartRepository,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public jwtService: TokenService,
     @inject(UserServiceBindings.USER_SERVICE)
@@ -95,10 +94,7 @@ export class AuthController {
       const newUser = await this.authService.createUser(
         user as User
       );
-      const newUserCart: Pick<Partial<Cart>, 'items' | 'userId'> = { items: [] };
-      newUserCart.userId = newUser.id;
-      this.cartRepository.create(newUserCart);
-      // console.log();
+      // console.log(newUser);
       return newUser;
     } catch (error) {
       if (error.code === 11000 && error.message.includes('index: email')) {

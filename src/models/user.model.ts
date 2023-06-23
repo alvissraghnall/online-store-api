@@ -104,8 +104,8 @@ export class User extends EntityWithIdAndTimestamps {
     type: "string",
     required: true,
     jsonSchema: {
-      const: {$data: '1/password'},
-    }
+      const: {$data: '1/password'}, 
+    },
   })
   confirmPassword: string;
 

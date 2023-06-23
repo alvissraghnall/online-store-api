@@ -18,7 +18,6 @@ import {
   response,
 } from '@loopback/rest';
 import {Cart, CartItem} from '../models';
-import {CartRepository} from '../repositories';
 import {inject} from '@loopback/context';
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import {service} from '@loopback/core';
@@ -125,6 +124,23 @@ export class CartController {
     @param.filter(Cart, {exclude: 'where'}) filter?: FilterExcludingWhere<Cart>
   ): Promise<Cart> {
     return this.cartService.findById(id, filter);
+  }
+
+  @get('/carts/user')
+  @response(200, {
+    description: 'Cart model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Cart),
+      },
+    },
+  })
+  @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
+  async findByUserId(
+    @inject(SecurityBindings.USER) loggedInUserProfile: UserProfile,
+    @param.filter(Cart, {exclude: 'where'}) filter?: FilterExcludingWhere<Cart>
+  ): Promise<Cart> {
+    return this.cartService.findByUser(loggedInUserProfile);
   }
 
   @patch('/carts/{id}')

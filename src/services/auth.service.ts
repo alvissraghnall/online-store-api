@@ -4,9 +4,10 @@ import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {UserProfile, securityId} from '@loopback/security';
 import _ from 'lodash';
-import {User} from '../models';
+import {Cart, User} from '../models';
 import {Credentials, UserRepository} from '../repositories';
 import {BcryptHasher, PasswordHasher} from './hash-password.service';
+import {CartRepository} from '../repositories';
 
 @injectable(asService(AuthService))
 export class AuthService implements LbkUserService<User, Credentials> {
@@ -15,6 +16,7 @@ export class AuthService implements LbkUserService<User, Credentials> {
     public userRepository: UserRepository,
     @service(BcryptHasher)
     public passwordHasher: PasswordHasher,
+    @repository(CartRepository) public cartRepository: CartRepository,
     // @inject('services.EmailService')
     // public emailService: EmailService,
   ) { }
@@ -73,7 +75,17 @@ export class AuthService implements LbkUserService<User, Credentials> {
     const user = await this.userRepository.create(
       userWithPassword
     );
+    
+    // const newUserCart: Pick<Partial<Cart>, 'items' | 'userId'> = { items: [] };
+    // newUserCart.userId = newUser.id;
+    // this.cartRepository.create(newUserCart);
+    console.log(user);
     user.id = user.id.toString();
+    
+    const newUserCart: Pick<Partial<Cart>, 'items' | 'userId'> = { items: [] };
+    newUserCart.userId = user.id;
+    this.cartRepository.create(newUserCart);
+
     await this.userRepository.userCredentials(user.id).create({password});
     return _.omit(userWithPassword, 'password');
   }
