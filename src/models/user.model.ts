@@ -1,6 +1,7 @@
 import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 import {
   Entity,
+  hasMany,
   hasOne,
   model,
   property
@@ -119,8 +120,8 @@ export class User extends EntityWithIdAndTimestamps {
   @hasOne(() => UserCredentials)
   userCredentials: UserCredentials;
 
-  @hasMany(() => Product[])
-  favourites: Product[]
+  @hasMany(() => Product)
+  favourites: Product[];
 
 
   // @hasMany(() => Order)
@@ -136,4 +137,5 @@ export class User extends EntityWithIdAndTimestamps {
 
 export interface UserRelations {
   // describe navigational properties here
+  favourites: Product[];
 }

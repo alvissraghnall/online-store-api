@@ -7,12 +7,12 @@ import {
   juggler,
   repository
 } from '@loopback/repository';
-import {User, Order} from '../models';
+import {User, Order, Product} from '../models';
 import {UserCredentials} from '../models';
 // import {OrderRepository} from './order.repository';
 import {UserCredentialsRepository} from './user-credentials.repository';
 import {TimeStampRepositoryMixin} from '../mixins/timestamp.mixin';
-import {OrderRepository} from '.';
+import {OrderRepository, ProductRepository} from '.';
 
 export type Credentials = {
   email: string;
@@ -28,6 +28,7 @@ export class UserRepository extends TimeStampRepositoryMixin<
   >
 >(DefaultCrudRepository) {
   public readonly orders: HasManyRepositoryFactory<Order, typeof User.prototype.id>;
+  public readonly favourites: HasManyRepositoryFactory<Product, typeof User.prototype.id>;
 
   public readonly userCredentials: HasOneRepositoryFactory<
     UserCredentials,
@@ -37,6 +38,7 @@ export class UserRepository extends TimeStampRepositoryMixin<
   constructor(
     @inject('datasources.mongo') readonly dataSource: juggler.DataSource,
     @repository('OrderRepository') public readonly orderRepository: OrderRepository,
+    @repository('ProductRepository') public readonly productRepository: ProductRepository,
     @repository.getter('UserCredentialsRepository')
     protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>,
   ) {
@@ -49,6 +51,14 @@ export class UserRepository extends TimeStampRepositoryMixin<
     //   'orders',
     //   async () => orderRepository,
     // );
+    this.favourites = this.createHasManyRepositoryFactoryFor(
+      'favourites',
+      async () => productRepository,
+    );
+
+    this.registerInclusionResolver('favourites',
+      this.favourites.inclusionResolver
+    );
   }
 
   async findCredentials(
