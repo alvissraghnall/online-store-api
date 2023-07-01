@@ -51,6 +51,11 @@ export class Product extends EntityWithIdAndTimestamps {
   price: number;
 
   @property({
+    type: 'number',
+  })
+  rating: number;
+
+  @property({
     type: 'string',
     required: true,
     jsonSchema: {

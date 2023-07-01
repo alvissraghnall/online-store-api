@@ -11,7 +11,7 @@ export class Cart extends EntityWithIdAndTimestamps {
   userId: string;
 
   @property.array(CartItem)
-  items?: CartItem[];
+  items: CartItem[];
 
   constructor(data?: Partial<Cart>) {
     super(data);

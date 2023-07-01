@@ -78,7 +78,7 @@ export class CartController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Cart, {includeRelations: true}),
+          items: getModelSchemaRef(Cart, {includeRelations: true, }),
         },
       },
     },
@@ -183,7 +183,7 @@ export class CartController {
     await this.cartService.deleteById(id);
   }
 
-  @put("/carts/{id}/add-item")
+  @put("/carts/add-item")
   @response(200, {
     description: 'User shopping cart item added.',
     content: {
@@ -204,10 +204,9 @@ export class CartController {
         },
       },
     }) item: CartItem,
-    @param.path.string('id') cartId: string,
     @inject(SecurityBindings.USER) loggedInUserProfile: UserProfile,
   ) {
-    return this.cartService.addItem(cartId, item, loggedInUserProfile);
+    return this.cartService.addItem(item, loggedInUserProfile);
   }
 }
 

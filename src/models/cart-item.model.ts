@@ -1,4 +1,4 @@
-import {hasOne, model, property} from '@loopback/repository';
+import {belongsTo, hasOne, model, property} from '@loopback/repository';
 import {Product} from './product.model';
 // import {EntityWithId} from './entity-with-id.model';
 import {EntityWithTimestamps} from './entity-with-timestamps.model';
@@ -6,12 +6,18 @@ import {EntityWithTimestamps} from './entity-with-timestamps.model';
 @model({settings: {strictObjectIDCoercion: true}})
 export class CartItem extends EntityWithTimestamps {
 
+  // @property({
+  //   id: true,
+  //   type: 'string'
+  // })
+  // id: string;
+
   @property({
     id: true,
+    type: 'string',
     mongodb: {
       dataType: 'ObjectId'
     },
-    type: 'string'
   })
   productId: string;
 
@@ -20,6 +26,8 @@ export class CartItem extends EntityWithTimestamps {
     required: true,
   })
   quantity: number;
+
+  product: Product
 
   // Define well-known properties here
 

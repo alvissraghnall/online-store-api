@@ -1,5 +1,5 @@
 import {Constructor, Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, HasOneRepositoryFactory, repository} from '@loopback/repository';
+import {type BelongsToAccessor, DefaultCrudRepository, repository} from '@loopback/repository';
 import {MongoDataSource} from '../datasources';
 import {CartItem, CartItemRelations, Product} from '../models';
 import {TimeStampRepositoryMixin} from '../mixins/timestamp.mixin';
@@ -11,20 +11,29 @@ export class CartItemRepository extends TimeStampRepositoryMixin<
   Constructor<DefaultCrudRepository<CartItem, typeof CartItem.prototype.productId, CartItemRelations>>
 >(DefaultCrudRepository) {
 
-  // public readonly product: HasOneRepositoryFactory<
-  //   Product,
-  //   typeof Product.prototype.id
-  // >;
+  public readonly product: BelongsToAccessor<
+    Product,
+    typeof Product.prototype.id
+  >;
 
   constructor(
     @inject('datasources.mongo') readonly dataSource: MongoDataSource,
-    @repository.getter('ProductRepository')
-    getProductRepository: Getter<ProductRepository>,
+    @repository.getter('ProductRepository') protected readonly getProductRepository: Getter<ProductRepository>,
+
   ) {
     super(CartItem, dataSource);
     // this.product = this.createHasOneRepositoryFactoryFor(
     //   'product',
     //   getProductRepository,
     // );
+
+    this.product = this.createBelongsToAccessorFor(
+      'product',
+      getProductRepository,
+    );
+
+    this.registerInclusionResolver('product',
+      this.product.inclusionResolver
+    );
   }
 }

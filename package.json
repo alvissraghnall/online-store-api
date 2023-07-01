@@ -30,6 +30,7 @@
     "migrate": "node ./dist/migrate",
     "preopenapi-spec": "npm run build",
     "openapi-spec": "node ./dist/openapi-spec",
+    "openapi-export": "sh gen-openapi.sh",
     "prestart": "npm run rebuild",
     "start": "node -r dotenv/config -r source-map-support/register .",
     "start:dev": "nodemon --inspect",

@@ -9,7 +9,7 @@ import {
 // import {UserCredentials} from './user-credentials.model';
 // import {ShoppingCart} from './shopping-cart.model';
 import {field, ID, objectType} from '@loopback/graphql';
-import {UserCredentials} from '.';
+import {UserCredentials, Product} from '.';
 
 @model({
   settings: {
@@ -104,7 +104,7 @@ export class User extends EntityWithIdAndTimestamps {
     type: "string",
     required: true,
     jsonSchema: {
-      const: {$data: '1/password'}, 
+      const: {$data: '1/password'},
     },
   })
   confirmPassword: string;
@@ -118,6 +118,9 @@ export class User extends EntityWithIdAndTimestamps {
 
   @hasOne(() => UserCredentials)
   userCredentials: UserCredentials;
+
+  @hasMany(() => Product[])
+  favourites: Product[]
 
 
   // @hasMany(() => Order)
