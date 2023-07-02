@@ -21,7 +21,7 @@ import {Product, User} from '../models';
 import {UserRepository} from '../repositories';
 import {inject, service} from '@loopback/core';
 import {FavouritesService} from '../services/favourites.service';
-import {SecurityBindings, UserProfile} from '@loopback/security';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {authenticate} from '@loopback/authentication';
 
 @authenticate('jwt')
@@ -49,7 +49,7 @@ export class FavouritesController {
           properties: {
             productId: {
               type: 'string',
-              
+
             }
           },
         }},
@@ -60,104 +60,49 @@ export class FavouritesController {
     return this.favouritesService.add(product.productId, this.loggedInUserProfile);
   }
 
-  @get('/favourites/count')
-  @response(200, {
-    description: 'User model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
-    return this.userRepository.count(where);
-  }
+
 
   @get('/favourites')
   @response(200, {
-    description: 'Array of User model instances',
+    description: 'Array of User favourites',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(User, {includeRelations: true}),
+          items: getModelSchemaRef(Product, {includeRelations: true}),
         },
       },
     },
   })
   async find(
     @param.filter(User) filter?: Filter<User>,
-  ): Promise<User[]> {
-    return this.userRepository.find(filter);
+  ): Promise<any> {
+    return (await this.userRepository.findById(this.loggedInUserProfile[securityId], {
+      include: ['favourites']
+    })).favourites;
   }
 
-  @patch('/favourites')
-  @response(200, {
-    description: 'User PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
-    return this.userRepository.updateAll(user, where);
-  }
+  // @get('/favourites/{id}')
+  // @response(200, {
+  //   description: 'User favourite instance',
+  //   content: {
+  //     'application/json': {
+  //       schema: getModelSchemaRef(Product),
+  //     },
+  //   },
+  // })
+  // async findById(
+  //   @param.path.string('id') id: string,
+  //   @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
+  // ): Promise<User> {
+  //   return this.userRepository.findById(id, filter);
+  // }
 
-  @get('/favourites/{id}')
-  @response(200, {
-    description: 'User model instance',
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(User, {includeRelations: true}),
-      },
-    },
-  })
-  async findById(
-    @param.path.string('id') id: string,
-    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
-  ): Promise<User> {
-    return this.userRepository.findById(id, filter);
-  }
-
-  @patch('/favourites/{id}')
+  @del('/favourites/{productId}')
   @response(204, {
-    description: 'User PATCH success',
+    description: 'User Favourite item DELETE success',
   })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-  ): Promise<void> {
-    await this.userRepository.updateById(id, user);
-  }
-
-  @put('/favourites/{id}')
-  @response(204, {
-    description: 'User PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() user: User,
-  ): Promise<void> {
-    await this.userRepository.replaceById(id, user);
-  }
-
-  @del('/favourites/{id}')
-  @response(204, {
-    description: 'User DELETE success',
-  })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.userRepository.deleteById(id);
+  async deleteById(@param.path.string('productId') productId: string): Promise<void> {
+    await this.favouritesService.delete(productId, this.loggedInUserProfile);
   }
 }

@@ -58,11 +58,18 @@ export class FavouritesService {
     return product;
   }
 
-  async updateById(id: string, product: Partial<Product>): Promise<void> {
-    await this.productRepository.updateById(id, product);
-  }
+  async delete (productId: string, user: UserProfile): Promise<void> {
+    const existingFavorite = await this.favouriteRepository.findOne({
+      where: {
+        userId: user[securityId],
+        productId,
+      },
+    });
 
-  async deleteById(id: string): Promise<void> {
-    await this.productRepository.deleteById(id);
+    if (!existingFavorite) {
+      throw new HttpErrors[404]("Product not found amongst favourites");
+    }
+
+    await this.favouriteRepository.deleteById(existingFavorite.id);
   }
 }
