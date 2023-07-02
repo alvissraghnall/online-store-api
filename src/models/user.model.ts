@@ -11,6 +11,7 @@ import {
 // import {ShoppingCart} from './shopping-cart.model';
 import {field, ID, objectType} from '@loopback/graphql';
 import {UserCredentials, Product} from '.';
+import {Favourite} from './favourite.model';
 
 @model({
   settings: {
@@ -107,6 +108,7 @@ export class User extends EntityWithIdAndTimestamps {
     jsonSchema: {
       const: {$data: '1/password'},
     },
+    hidden: true
   })
   confirmPassword: string;
 
@@ -120,7 +122,7 @@ export class User extends EntityWithIdAndTimestamps {
   @hasOne(() => UserCredentials)
   userCredentials: UserCredentials;
 
-  @hasMany(() => Product)
+  @hasMany(() => Product, {through: {model: () => Favourite}})
   favourites: Product[];
 
 

@@ -8,6 +8,7 @@ export * from './product.model';
 export * from './review.model';
 export * from './user-credentials.model';
 export * from './user.model';
+export * from './favourite.model';
 
 //export * from './new-product.model';
 //export * from './discount-with-relations.model';

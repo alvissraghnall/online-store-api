@@ -2,11 +2,14 @@ import {
   model,
   Entity,
   property,
-  hasOne
+  hasOne,
+  hasMany
 } from '@loopback/repository';
 import {Discount} from './discount.model';
 import {ProductInventory} from './product-inventory.model';
 import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
+import {User} from './user.model';
+import {Favourite} from './favourite.model';
 
 @model({
   settings: {
@@ -69,6 +72,10 @@ export class Product extends EntityWithIdAndTimestamps {
 
   @hasOne(() => ProductInventory)
   inventory: ProductInventory;
+
+  // @hasMany(() => User, {through: {model: () => Favourite}})
+  // favourites: Product[];
+
 
   // @property({
   //   type: 'date',

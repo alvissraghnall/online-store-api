@@ -29,7 +29,8 @@ export class FavouritesController {
   constructor(
     @repository(UserRepository)
     public userRepository : UserRepository,
-    @service(FavouritesService) private favouritesService: FavouritesService
+    @service(FavouritesService) private favouritesService: FavouritesService,
+    @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
   ) {}
 
   @post('/favourites')
@@ -39,20 +40,24 @@ export class FavouritesController {
   })
   async add(
     @requestBody({
+      description: 'The id of product to be added.',
+      required: true,
       content: {
-        'application/json': {
-          schema: getModelSchemaRef(Product, {
-            title: 'Product',
-            exclude: Object.keys(Product.prototype) as unknown as (keyof Product)[],
-            partial: true
-          }),
-        },
+        'application/json': {schema: {
+          type: 'object',
+          required: ['productId'],
+          properties: {
+            productId: {
+              type: 'string',
+              
+            }
+          },
+        }},
       },
     })
-    product: Pick<Product, "id">,
-    @inject(SecurityBindings.USER) loggedInUserProfile: UserProfile,
+    product: {productId: string},
   ) {
-    return this.favouritesService.add(product.id, loggedInUserProfile);
+    return this.favouritesService.add(product.productId, this.loggedInUserProfile);
   }
 
   @get('/favourites/count')
