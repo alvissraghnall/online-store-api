@@ -10,7 +10,7 @@ import {
 // import {UserCredentials} from './user-credentials.model';
 // import {ShoppingCart} from './shopping-cart.model';
 import {field, ID, objectType} from '@loopback/graphql';
-import {UserCredentials, Product} from '.';
+import {UserCredentials, Product, Order, Review} from '.';
 import {Favourite} from './favourite.model';
 
 @model({
@@ -126,8 +126,11 @@ export class User extends EntityWithIdAndTimestamps {
   favourites: Product[];
 
 
-  // @hasMany(() => Order)
-  // orders: Order[];
+  @hasMany(() => Order)
+  orders: Order[];
+
+  // @hasMany(() => Review)
+  // reviews: Review[];
 
   // @hasOne(() => ShoppingCart)
   // shoppingCart: ShoppingCart;

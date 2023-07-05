@@ -44,7 +44,7 @@ export class UserRepository extends TimeStampRepositoryMixin<
 
   constructor(
     @inject('datasources.mongo') readonly dataSource: juggler.DataSource,
-    @repository('OrderRepository') public readonly orderRepository: OrderRepository,
+    @repository.getter('OrderRepository') public readonly orderRepositoryGetter: Getter<OrderRepository>,
     @repository.getter('ProductRepository') public readonly productRepositoryGetter: Getter<ProductRepository>,
     @repository.getter('FavouriteRepository') public readonly favouriteRepositoryGetter: Getter<FavouriteRepository>,
     @repository.getter('UserCredentialsRepository')
@@ -55,10 +55,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
       'userCredentials',
       userCredentialsRepositoryGetter,
     );
-    // this.orders = this.createHasManyRepositoryFactoryFor(
-    //   'orders',
-    //   async () => orderRepository,
-    // );
+    this.orders = this.createHasManyRepositoryFactoryFor(
+      'orders',
+      orderRepositoryGetter,
+    );
     this.favourites = this.createHasManyThroughRepositoryFactoryFor(
       'favourites',
       productRepositoryGetter,
@@ -67,6 +67,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
 
     this.registerInclusionResolver('favourites',
       this.favourites.inclusionResolver
+    );
+
+    this.registerInclusionResolver('orders',
+      this.orders.inclusionResolver
     );
   }
 

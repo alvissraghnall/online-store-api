@@ -1,13 +1,14 @@
 import {belongsTo, model, property} from '@loopback/repository';
 import {EntityWithId, Product} from '.';
 import {User} from '../models';
+import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 
 @model({
   settings: {
     strictObjectIDCoercion: true,
   }
 })
-export class Review extends EntityWithId {
+export class Review extends EntityWithIdAndTimestamps {
   @property({
     type: 'number',
     required: true,
@@ -26,16 +27,10 @@ export class Review extends EntityWithId {
   })
   description: string;
 
-  @property({
-    type: 'date',
-    default: () => new Date(),
-  })
-  createdAt?: Date;
-
-  @belongsTo(() => User, {keyFrom: 'userId', keyTo: 'id', name: 'user'})
+  @belongsTo(() => User)
   userId?: string;
 
-  @belongsTo(() => Product, {keyFrom: 'productId', name: 'product'})
+  @belongsTo(() => Product)
   productId?: string;
 
   constructor(data?: Partial<Review>) {

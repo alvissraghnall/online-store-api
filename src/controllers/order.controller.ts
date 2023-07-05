@@ -19,11 +19,19 @@ import {
 } from '@loopback/rest';
 import {Order} from '../models';
 import {OrderRepository} from '../repositories';
+import {authenticate} from '@loopback/authentication';
+import {OrderService} from '../services/order.service';
+import {inject, service} from '@loopback/core';
+import {authorize} from '@loopback/authorization';
+import {SecurityBindings, UserProfile} from '@loopback/security';
+import {basicAuthorization} from '../services';
 
+@authenticate('jwt')
 export class OrderController {
   constructor(
-    @repository(OrderRepository)
-    public orderRepository : OrderRepository,
+    @service(OrderService)
+    public orderService : OrderService,
+    @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
   ) {}
 
   @post('/orders')
@@ -31,20 +39,21 @@ export class OrderController {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
+  @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
   async create(
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(Order, {
             title: 'NewOrder',
-            exclude: ['id', 'status'],
+            exclude: ['id', 'status', 'userId', 'date'],
           }),
         },
       },
     })
     order: Omit<Order, 'id' | 'status'>,
   ): Promise<Order> {
-    return this.orderRepository.create(order);
+    return this.orderService.create(order, this.loggedInUserProfile);
   }
 
   @get('/orders/count')
@@ -55,7 +64,7 @@ export class OrderController {
   async count(
     @param.where(Order) where?: Where<Order>,
   ): Promise<Count> {
-    return this.orderRepository.count(where);
+    return this.orderService.count(where);
   }
 
   @get('/orders')
@@ -73,26 +82,7 @@ export class OrderController {
   async find(
     @param.filter(Order) filter?: Filter<Order>,
   ): Promise<Order[]> {
-    return this.orderRepository.find(filter);
-  }
-
-  @patch('/orders')
-  @response(200, {
-    description: 'Order PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Order, {partial: true}),
-        },
-      },
-    })
-    order: Order,
-    @param.where(Order) where?: Where<Order>,
-  ): Promise<Count> {
-    return this.orderRepository.updateAll(order, where);
+    return this.orderService.find(filter);
   }
 
   @get('/orders/{id}')
@@ -108,13 +98,29 @@ export class OrderController {
     @param.path.string('id') id: string,
     @param.filter(Order, {exclude: 'where'}) filter?: FilterExcludingWhere<Order>
   ): Promise<Order> {
-    return this.orderRepository.findById(id, filter);
+    return this.orderService.findById(id, filter);
+  }
+
+  @get('/orders/user')
+  @response(200, {
+    description: 'Order model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Order, {includeRelations: true}),
+      },
+    },
+  })
+  async findByUser(
+    @param.filter(Order, {exclude: 'where'}) filter?: FilterExcludingWhere<Order>
+  ): Promise<Order[]> {
+    return this.orderService.findByUser(this.loggedInUserProfile, filter);
   }
 
   @patch('/orders/{id}')
   @response(204, {
     description: 'Order PATCH success',
   })
+  @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
@@ -126,18 +132,7 @@ export class OrderController {
     })
     order: Order,
   ): Promise<void> {
-    await this.orderRepository.updateById(id, order);
-  }
-
-  @put('/orders/{id}')
-  @response(204, {
-    description: 'Order PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() order: Order,
-  ): Promise<void> {
-    await this.orderRepository.replaceById(id, order);
+    await this.orderService.updateById(id, order);
   }
 
   @del('/orders/{id}')
@@ -145,6 +140,6 @@ export class OrderController {
     description: 'Order DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.orderRepository.deleteById(id);
+    await this.orderService.deleteById(id);
   }
 }

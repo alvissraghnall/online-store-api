@@ -3,6 +3,12 @@ import {User} from '../models';
 import {CartItem} from './cart-item.model';
 import {EntityWithIdAndTimestamps} from './entity-with-id-and-timestamps.model';
 
+export enum OrderStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+};
 
 @model({
   settings: {
@@ -19,10 +25,9 @@ export class Order extends EntityWithIdAndTimestamps {
 
   @property({
     type: 'string',
-    required: true,
     jsonSchema: {
-      enum: ['pending', 'processing', 'completed', 'cancelled'],
-      default: 'pending'
+      enum: [OrderStatus.PENDING, OrderStatus.PROCESSING, OrderStatus.COMPLETED, OrderStatus.CANCELLED],
+      default: OrderStatus.PENDING
     },
   })
   status: string;
@@ -30,7 +35,7 @@ export class Order extends EntityWithIdAndTimestamps {
   @property({
     type: 'date',
   })
-  date?: string;
+  date?: Date;
 
   constructor(data?: Partial<Order>) {
     super(data);
@@ -39,6 +44,7 @@ export class Order extends EntityWithIdAndTimestamps {
 
 export interface OrderRelations {
   // describe navigational properties here
+  user?: User
 }
 
 export type OrderWithRelations = Order & OrderRelations;
