@@ -1,9 +1,10 @@
-import {injectable, /* inject, */ BindingScope} from '@loopback/core';
+import {injectable, /* inject, */ BindingScope, service} from '@loopback/core';
 import {Count, Filter, FilterExcludingWhere, Where, repository} from '@loopback/repository';
-import {ReviewRepository, UserRepository} from '../repositories';
-import { Review } from '../models';
+import {ProductRepository, ReviewRepository, UserRepository} from '../repositories';
+import { Product, Review } from '../models';
 import {HttpErrors} from '@loopback/rest';
 import {UserProfile, securityId} from '@loopback/security';
+import {ProductService} from './product.service';
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class ReviewService {
@@ -11,10 +12,12 @@ export class ReviewService {
   constructor(
     @repository(ReviewRepository) private readonly reviewRepository: ReviewRepository,
     @repository(UserRepository) private readonly userRepository: UserRepository,
+    @service(ProductService) private readonly productService: ProductService,
 
   ) {}
 
-  async create(review: Partial<Omit<Review, "id">>, user: UserProfile): Promise<Review> {
+  async create(review: Omit<Review, "id" | "userId">, user: UserProfile): Promise<Review> {
+    const productExists: Awaited<Product> = await this.productService.findById(review.productId);
 
     return this.userRepository.reviews(user[securityId]).create(review);
   }
@@ -53,5 +56,9 @@ export class ReviewService {
 
   async deleteById(id: string): Promise<void> {
     await this.reviewRepository.deleteById(id);
+  }
+
+  async deleteAll () {
+    await this.reviewRepository.deleteAll();
   }
 }

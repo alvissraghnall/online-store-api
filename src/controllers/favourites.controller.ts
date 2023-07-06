@@ -20,7 +20,7 @@ import {
 import {Product, User} from '../models';
 import {UserRepository} from '../repositories';
 import {inject, service} from '@loopback/core';
-import {FavouritesService} from '../services/favourites.service';
+import {FavouritesService} from '../services';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {authenticate} from '@loopback/authentication';
 

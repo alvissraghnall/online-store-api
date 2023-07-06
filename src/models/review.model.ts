@@ -30,8 +30,8 @@ export class Review extends EntityWithIdAndTimestamps {
   @belongsTo(() => User)
   userId?: string;
 
-  @belongsTo(() => Product)
-  productId?: string;
+  @belongsTo(() => Product, {}, { required: true })
+  productId: string;
 
   constructor(data?: Partial<Review>) {
     super(data);

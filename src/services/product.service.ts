@@ -27,9 +27,9 @@ export class ProductService {
 
   async findById(id: string): Promise<Product> {
     const product = await this.productRepository.findById(id);
-    if (!product) {
-      throw new HttpErrors.NotFound(`Product not found: ${id}`);
-    }
+    // if (!product) {
+    //   throw new HttpErrors.NotFound(`Product not found: ${id}`);
+    // }
     return product;
   }
 

@@ -1,36 +1,77 @@
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
+import {inject, service} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
   Where,
+  repository,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  RequestBodyObject,
+  SchemaObject,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 import {Review} from '../models';
 import {ReviewRepository} from '../repositories';
-import {basicAuthorization, ReviewService} from '../services';
-import {inject, service} from '@loopback/core';
-import {authorize} from '@loopback/authorization';
-import {SecurityBindings, UserProfile} from '@loopback/security';
+import {ReviewService, basicAuthorization} from '../services';
 
+
+const ReviewSchema: SchemaObject = {
+  type: 'object',
+  required: ['title', 'description', 'rating', 'productId'],
+  properties: {
+    title: {
+      type: 'string',
+      minLength: 4
+    },
+    description: {
+      type: 'string',
+      minLength: 8,
+    },
+    rating: {
+      type: 'number',
+    },
+    productId: {
+      type: 'string'
+    }
+  },
+};
+
+export const ReviewRequestBody: RequestBodyObject = {
+  description: 'The input of reviewCreate function',
+  required: true,
+  content: {
+    'application/json': {
+      schema: getModelSchemaRef(Review, {
+        exclude: ['id', 'userId']
+      }),
+    },
+  },
+  additionalProperties: false,
+
+};
+
+
+@authenticate('jwt')
 export class ReviewController {
   constructor(
     @repository(ReviewRepository)
-    public reviewRepository : ReviewRepository,
+    public reviewRepository: ReviewRepository,
     @service(ReviewService) private readonly reviewService: ReviewService,
     @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
-  ) {}
+  ) { }
 
   @post('/reviews')
   @response(200, {
@@ -38,16 +79,7 @@ export class ReviewController {
     content: {'application/json': {schema: getModelSchemaRef(Review)}},
   })
   async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Review, {
-            title: 'NewReview',
-            exclude: ['id', 'userId', 'createdAt', 'updatedAt'],
-          }),
-        },
-      },
-    })
+    @requestBody(ReviewRequestBody)
     review: Omit<Review, 'id'>,
   ): Promise<Review> {
     return this.reviewService.create(review, this.loggedInUserProfile);
@@ -171,5 +203,17 @@ export class ReviewController {
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.reviewService.deleteById(id);
+  }
+
+  @del('/reviews')
+  @response(204, {
+    description: 'Reviews DELETE success',
+  })
+  @authorize({
+    allowedRoles: ["admin"],
+    voters: [basicAuthorization],
+  })
+  async delete(): Promise<void> {
+    await this.reviewService.deleteAll();
   }
 }

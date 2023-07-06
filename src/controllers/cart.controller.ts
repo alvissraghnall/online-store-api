@@ -49,7 +49,7 @@ export class CartController {
         'application/json': {
           schema: getModelSchemaRef(Cart, {
             title: 'NewCart',
-            exclude: ['id', 'userId'],
+            exclude: ['id', 'userId', 'createdAt', 'updatedAt'],
           }),
         },
       },
