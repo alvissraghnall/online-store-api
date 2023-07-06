@@ -129,8 +129,8 @@ export class User extends EntityWithIdAndTimestamps {
   @hasMany(() => Order)
   orders: Order[];
 
-  // @hasMany(() => Review)
-  // reviews: Review[];
+  @hasMany(() => Review)
+  reviews: Review[];
 
   // @hasOne(() => ShoppingCart)
   // shoppingCart: ShoppingCart;

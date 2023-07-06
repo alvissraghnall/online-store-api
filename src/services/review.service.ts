@@ -1,7 +1,7 @@
 import {injectable, /* inject, */ BindingScope} from '@loopback/core';
-import {Count, Filter, FilterExcludingWhere, ObjectType, Where, repository} from '@loopback/repository';
-import {OrderRepository, ProductRepository, ReviewRepository, UserRepository} from '../repositories';
-import { Order, Product} from '../models';
+import {Count, Filter, FilterExcludingWhere, Where, repository} from '@loopback/repository';
+import {ReviewRepository, UserRepository} from '../repositories';
+import { Review } from '../models';
 import {HttpErrors} from '@loopback/rest';
 import {UserProfile, securityId} from '@loopback/security';
 
@@ -14,36 +14,44 @@ export class ReviewService {
 
   ) {}
 
-  async create(order: Partial<Omit<Order, "id">>, user: UserProfile): Promise<Order> {
+  async create(review: Partial<Omit<Review, "id">>, user: UserProfile): Promise<Review> {
 
-    return this.userRepository.orders(user[securityId]).create(order);
+    return this.userRepository.reviews(user[securityId]).create(review);
   }
 
-  async count(where?: Where<Order>): Promise<Count> {
-    return this.orderRepository.count(where);
+  async count(where?: Where<Review>): Promise<Count> {
+    return this.reviewRepository.count(where);
   }
 
-  async find(filter?: Filter<Order>) {
-    return this.orderRepository.find(filter);
+  async find(filter?: Filter<Review>) {
+    return this.reviewRepository.find(filter);
   }
 
-  async findByUser (user: UserProfile, filter?: Filter<Order>) {
-    return this.userRepository.orders(user[securityId]).find();
+  async findByUser (user: UserProfile, filter?: Filter<Review>) {
+    return this.userRepository.reviews(user[securityId]).find();
   }
 
-  async findById(id: string, filter?: FilterExcludingWhere<Order>): Promise<Order> {
-    const order = await this.orderRepository.findById(id, filter);
-    if (!order) {
-      throw new HttpErrors.NotFound(`Order not found: ${id}`);
+  async findById(id: string, filter?: FilterExcludingWhere<Review>): Promise<Review> {
+    const review = await this.reviewRepository.findById(id, filter);
+    if (!review) {
+      throw new HttpErrors.NotFound(`Review not found: ${id}`);
     }
-    return order;
+    return review;
   }
 
-  // async updateById(id: string, order: Partial<Order>): Promise<void> {
-  //   await this.orderRepository.updateById(id, order);
-  // }
+  async updateById(id: string, review: Partial<Review>): Promise<void> {
+    await this.reviewRepository.updateById(id, review);
+  }
+
+  async replaceById(id: string, review: Partial<Review>): Promise<void> {
+    await this.reviewRepository.replaceById(id, review);
+  }
+
+  async updateAll(review: Partial<Review>, where?: Where<Review>): Promise<Count> {
+    return await this.reviewRepository.updateAll(review, where);
+  }
 
   async deleteById(id: string): Promise<void> {
-    await this.orderRepository.deleteById(id);
+    await this.reviewRepository.deleteById(id);
   }
 }

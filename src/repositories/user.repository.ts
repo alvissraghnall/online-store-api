@@ -8,12 +8,12 @@ import {
   juggler,
   repository
 } from '@loopback/repository';
-import {User, Order, Product, Favourite} from '../models';
+import {User, Order, Product, Favourite, Review} from '../models';
 import {UserCredentials} from '../models';
 // import {OrderRepository} from './order.repository';
 import {UserCredentialsRepository} from './user-credentials.repository';
 import {TimeStampRepositoryMixin} from '../mixins/timestamp.mixin';
-import {FavouriteRepository, OrderRepository, ProductRepository} from '.';
+import {FavouriteRepository, OrderRepository, ProductRepository, ReviewRepository} from '.';
 
 export type Credentials = {
   email: string;
@@ -29,7 +29,7 @@ export class UserRepository extends TimeStampRepositoryMixin<
   >
 >(DefaultCrudRepository) {
   public readonly orders: HasManyRepositoryFactory<Order, typeof User.prototype.id>;
-  // public readonly favourites: HasManyRepositoryFactory<Product, typeof User.prototype.id>;
+  public readonly reviews: HasManyRepositoryFactory<Review, typeof User.prototype.id>;
   public readonly favourites: HasManyThroughRepositoryFactory<
     Product,
     typeof Product.prototype.id,
@@ -47,8 +47,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
     @repository.getter('OrderRepository') public readonly orderRepositoryGetter: Getter<OrderRepository>,
     @repository.getter('ProductRepository') public readonly productRepositoryGetter: Getter<ProductRepository>,
     @repository.getter('FavouriteRepository') public readonly favouriteRepositoryGetter: Getter<FavouriteRepository>,
+    @repository.getter('ReviewRepository') public readonly reviewRepositoryGetter: Getter<ReviewRepository>,
     @repository.getter('UserCredentialsRepository')
     protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>,
+
   ) {
     super(User, dataSource);
     this.userCredentials = this.createHasOneRepositoryFactoryFor(
@@ -58,6 +60,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
     this.orders = this.createHasManyRepositoryFactoryFor(
       'orders',
       orderRepositoryGetter,
+    );
+    this.reviews = this.createHasManyRepositoryFactoryFor(
+      'reviews',
+      reviewRepositoryGetter,
     );
     this.favourites = this.createHasManyThroughRepositoryFactoryFor(
       'favourites',
@@ -71,6 +77,10 @@ export class UserRepository extends TimeStampRepositoryMixin<
 
     this.registerInclusionResolver('orders',
       this.orders.inclusionResolver
+    );
+
+    this.registerInclusionResolver('reviews',
+      this.reviews.inclusionResolver
     );
   }
 
