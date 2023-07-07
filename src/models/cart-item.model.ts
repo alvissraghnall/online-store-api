@@ -27,6 +27,9 @@ export class CartItem extends EntityWithTimestamps {
   })
   quantity: number;
 
+  @property({
+    required: false,
+  })
   product: Product
 
   // Define well-known properties here

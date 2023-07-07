@@ -1,37 +1,35 @@
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
+import {inject} from '@loopback/context';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {Cart, CartItem} from '../models';
-import {inject} from '@loopback/context';
 import {SecurityBindings, UserProfile} from '@loopback/security';
-import {service} from '@loopback/core';
+import {Cart, CartItem} from '../models';
 import {basicAuthorization, CartService} from '../services';
-import {OPERATION_SECURITY_SPEC} from '@loopback/authentication-jwt';
-import {authenticate} from '@loopback/authentication';
-import {authorize} from '@loopback/authorization';
 
 @authenticate('jwt')
 export class CartController {
   constructor(
     @service(CartService) private readonly cartService: CartService,
     @inject(SecurityBindings.USER) private readonly currentUserProfile: UserProfile,
-  ) {}
+  ) { }
 
   @post('/carts')
   @response(200, {
@@ -193,13 +191,14 @@ export class CartController {
     },
   })
   @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
-  async addItem (
+  async addItem(
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(CartItem, {
             title: 'NewCartItem',
-            optional: ['quantity']
+            optional: ['quantity'],
+            exclude: ['product']
           }),
         },
       },
