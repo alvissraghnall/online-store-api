@@ -7,3 +7,4 @@ export * from './basic.auth';
 export * from './cart.service';
 export * from './favourites.service';
 export * from './review.service';
+export * from './payment.service';

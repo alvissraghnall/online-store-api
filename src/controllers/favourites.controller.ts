@@ -1,37 +1,31 @@
+import {authenticate} from '@loopback/authentication';
+import {inject, service} from '@loopback/core';
 import {
-  Count,
-  CountSchema,
   Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
+  repository
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
-  patch,
-  put,
-  del,
+  param,
+  post,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
+import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
 import {Product, User} from '../models';
 import {UserRepository} from '../repositories';
-import {inject, service} from '@loopback/core';
 import {FavouritesService} from '../services';
-import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
-import {authenticate} from '@loopback/authentication';
 
 @authenticate('jwt')
 export class FavouritesController {
   constructor(
     @repository(UserRepository)
-    public userRepository : UserRepository,
+    public userRepository: UserRepository,
     @service(FavouritesService) private favouritesService: FavouritesService,
     @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
-  ) {}
+  ) { }
 
   @post('/favourites')
   @response(200, {
@@ -43,16 +37,18 @@ export class FavouritesController {
       description: 'The id of product to be added.',
       required: true,
       content: {
-        'application/json': {schema: {
-          type: 'object',
-          required: ['productId'],
-          properties: {
-            productId: {
-              type: 'string',
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['productId'],
+            properties: {
+              productId: {
+                type: 'string',
 
-            }
-          },
-        }},
+              }
+            },
+          }
+        },
       },
     })
     product: {productId: string},
