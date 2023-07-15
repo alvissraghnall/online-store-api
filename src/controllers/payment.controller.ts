@@ -5,7 +5,7 @@ import {service} from '@loopback/core'
 import {post, getModelSchemaRef, response, requestBody, SchemaObject} from '@loopback/openapi-v3'
 import {repository} from '@loopback/repository'
 import {SecurityBindings, UserProfile} from '@loopback/security';
-import {Product, User} from '../models'
+import {CartItem, Product, User} from '../models'
 import {PaymentService} from '../services'
 
 type PaymentDetails = {
@@ -37,7 +37,7 @@ const paystackTxnInitResponseSchema: SchemaObject = {
           type: "string",
         },
       },
-      required: ["authorization_url", "access_code", "reference"],
+      required: ["authorization_url", "access_code"],
     },
   },
   required: ["status", "message", "data"],
@@ -68,14 +68,24 @@ export class PaymentController {
               amount: {
                 title: "total amount",
                 type: "number",
+              },
+              passedEmail: {
+                type: 'string'
+              },
+              items: {
+                type: 'array',
+                items: getModelSchemaRef(CartItem),
+
               }
-            }
+            },
+            required: ['amount', 'items'],
+            additionalProperties: false
           }
         }
       }
-    }) amount: number
+    }) body: {amount: number, passedEmail?: string, items: CartItem[]}
   ) {
-    return this.paymentService.makePayment(amount);
+    return this.paymentService.makePayment(body);
   }
 
 }

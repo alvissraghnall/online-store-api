@@ -1,38 +1,35 @@
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
+import {inject, service} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
-  put,
-  del,
+  post,
   requestBody,
-  response,
+  response
 } from '@loopback/rest';
-import {Order} from '../models';
-import {OrderRepository} from '../repositories';
-import {authenticate} from '@loopback/authentication';
-import {OrderService} from '../services/order.service';
-import {inject, service} from '@loopback/core';
-import {authorize} from '@loopback/authorization';
 import {SecurityBindings, UserProfile} from '@loopback/security';
+import {Order} from '../models';
 import {basicAuthorization} from '../services';
+import {OrderService} from '../services/order.service';
 
 @authenticate('jwt')
 export class OrderController {
   constructor(
     @service(OrderService)
-    public orderService : OrderService,
+    public orderService: OrderService,
     @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
-  ) {}
+  ) { }
 
   @post('/orders')
   @response(200, {
@@ -46,12 +43,12 @@ export class OrderController {
         'application/json': {
           schema: getModelSchemaRef(Order, {
             title: 'NewOrder',
-            exclude: ['id', 'status', 'userId', 'date'],
+            exclude: ['id', 'status', 'userId', 'date', 'reference', 'access_code'],
           }),
         },
       },
     })
-    order: Omit<Order, 'id' | 'status'>,
+    order: Omit<Order, 'access_code' | 'id' | 'status' | 'reference'>,
   ): Promise<Order> {
     return this.orderService.create(order, this.loggedInUserProfile);
   }
