@@ -2,10 +2,10 @@ import {authenticate} from '@loopback/authentication'
 import {UserRepository} from '@loopback/authentication-jwt'
 import {inject} from '@loopback/context'
 import {service} from '@loopback/core'
-import {post, getModelSchemaRef, response, requestBody, SchemaObject} from '@loopback/openapi-v3'
+import {post, getModelSchemaRef, response, requestBody, SchemaObject, param, get} from '@loopback/openapi-v3'
 import {repository} from '@loopback/repository'
 import {SecurityBindings, UserProfile} from '@loopback/security';
-import {CartItem, Product, User} from '../models'
+import {CartItem, Order, Product, User} from '../models'
 import {PaymentService} from '../services'
 
 type PaymentDetails = {
@@ -75,7 +75,6 @@ export class PaymentController {
               items: {
                 type: 'array',
                 items: getModelSchemaRef(CartItem),
-
               }
             },
             required: ['amount', 'items'],
@@ -86,6 +85,17 @@ export class PaymentController {
     }) body: {amount: number, passedEmail?: string, items: CartItem[]}
   ) {
     return this.paymentService.makePayment(body);
+  }
+
+  @get('/payment/verify/{reference}')
+  @response(200, {
+    description: 'Order details',
+    content: {'application/json': {schema: getModelSchemaRef(Order) }},
+  })
+  verify(
+    @param.path.string('reference') reference: string,
+  ) {
+    return this.paymentService.verifyPayment(reference);
   }
 
 }

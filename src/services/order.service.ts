@@ -1,9 +1,9 @@
-import {injectable, /* inject, */ BindingScope} from '@loopback/core';
-import {Count, Filter, FilterExcludingWhere, ObjectType, Where, repository} from '@loopback/repository';
-import {OrderRepository, ProductRepository, UserRepository} from '../repositories';
-import { Order, Product} from '../models';
+import { /* inject, */ BindingScope, injectable} from '@loopback/core';
+import {Count, DataObject, Filter, FilterExcludingWhere, Where, repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {UserProfile, securityId} from '@loopback/security';
+import {Order} from '../models';
+import {OrderRepository, UserRepository} from '../repositories';
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class OrderService {
@@ -12,7 +12,7 @@ export class OrderService {
     @repository(OrderRepository) private readonly orderRepository: OrderRepository,
     @repository(UserRepository) private readonly userRepository: UserRepository,
 
-  ) {}
+  ) { }
 
   async create(order: Partial<Omit<Order, "id">>, user: UserProfile): Promise<Order> {
     order.date = new Date();
@@ -30,7 +30,11 @@ export class OrderService {
     return this.orderRepository.find(filter);
   }
 
-  async findByUser (user: UserProfile, filter?: Filter<Order>) {
+  async findOne(filter: Filter<Order>) {
+    return this.orderRepository.findOne(filter);
+  }
+
+  async findByUser(user: UserProfile, filter?: Filter<Order>) {
     return this.userRepository.orders(user[securityId]).find();
   }
 
@@ -44,6 +48,10 @@ export class OrderService {
 
   async updateById(id: string, order: Partial<Order>): Promise<void> {
     await this.orderRepository.updateById(id, order);
+  }
+
+  async save (entity: DataObject<Order>) {
+    return this.orderRepository.save(entity);
   }
 
   async deleteById(id: string): Promise<void> {

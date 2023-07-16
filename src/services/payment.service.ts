@@ -2,8 +2,8 @@
 import {injectable, /* inject, */ BindingScope, service, inject} from '@loopback/core';
 import {Filter, ObjectType, repository} from '@loopback/repository';
 import {FavouriteRepository, ProductRepository} from '../repositories';
-import {CartItem, Order, Product, User} from '../models';
-import {HttpErrors} from '@loopback/rest';
+import {CartItem, Order, OrderStatus, Product, User} from '../models';
+import {HttpErrors, RestHttpErrors} from '@loopback/rest';
 import {UserRepository} from '../repositories/user.repository';
 import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
 import {OrderService} from './order.service';
@@ -29,7 +29,7 @@ export class PaymentService {
 
   private axiosInstance = axios.create(
     {
-      baseURL: 'https://api.paystack.co',
+      baseURL: 'https://api.paystack.co/transaction',
       method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`,
@@ -67,7 +67,7 @@ export class PaymentService {
     }
 
     const res = await this.axiosInstance.post<PaystackTxnInitResponse>(
-      "/transaction/initialize",
+      "/initialize",
       data,
     ).catch(
       err => {
@@ -80,14 +80,17 @@ export class PaymentService {
     if (res.data.status === true) {
 
       const newOrder = {
-        products: body.items,
+        products: body.items.map(
+          item => item = omit<Pick<CartItem, keyof CartItem>>(item, ['product'])
+        ),
         reference: res.data.data.reference,
         access_code: res.data.data.access_code
       }
 
-      for (let item of newOrder.products) {
-        item = omit<Pick<CartItem, keyof CartItem>>(item, ['product'])
-      }
+      // newOrder.products.map(
+      //   item => item = omit<Pick<CartItem, keyof CartItem>>(item, ['product'])
+      // );
+      console.log(newOrder.products);
 
       await this.orderService.create(newOrder, this.loggedInUserProfile);
 
@@ -96,6 +99,38 @@ export class PaymentService {
       return res.data;
     } else {
       return HttpErrors.InternalServerError("Failed for some reason!")
+    }
+  }
+
+  async verifyPayment (reference: string) {
+
+    const res = await this.axiosInstance.post<PaystackTxnInitResponse>(
+      `/verify/${reference}`,
+      {}, {
+        method: 'get'
+      }
+    ).catch(
+      err => {
+        console.log(err.response.data);
+        throw new HttpErrors[503]("Something went wrong from our end.")
+      }
+    );
+
+    if (res.data.status === true) {
+
+      const order = await this.orderService.findOne({
+        where: {
+          reference
+        }
+      });
+
+      if (!order) throw new HttpErrors.InternalServerError();
+
+      order.status = OrderStatus.PROCESSING;
+
+      return await this.orderService.save(order);
+    } else {
+      throw new HttpErrors.NotFound("Transaction with reference provided not found");
     }
   }
 
