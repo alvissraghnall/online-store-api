@@ -5,7 +5,7 @@ import {
   AuthorizationMetadata,
 } from '@loopback/authorization';
 import {securityId, UserProfile} from '@loopback/security';
-import _ from 'lodash';
+import { pick } from 'lodash';
 
 // Instance level authorizer
 // Can be also registered as an authorizer, depends on users' need.
@@ -16,7 +16,7 @@ export async function basicAuthorization(
   // No access if authorization details are missing
   let currentUser: UserProfile;
   if (authorizationCtx.principals.length > 0) {
-    const user = _.pick(authorizationCtx.principals[0], [
+    const user = pick(authorizationCtx.principals[0], [
       'id',
       'name',
       'roles',

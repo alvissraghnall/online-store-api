@@ -6,7 +6,8 @@ import {post, getModelSchemaRef, response, requestBody, SchemaObject, param, get
 import {repository} from '@loopback/repository'
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import {CartItem, Order, Product, User} from '../models'
-import {PaymentService} from '../services'
+import {PaymentService, basicAuthorization} from '../services'
+import {authorize} from '@loopback/authorization'
 
 type PaymentDetails = {
   amount: number,
@@ -45,6 +46,7 @@ const paystackTxnInitResponseSchema: SchemaObject = {
 
 
 @authenticate('jwt')
+@authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
 export class PaymentController {
   constructor(
     @service(PaymentService) private paymentService: PaymentService,
