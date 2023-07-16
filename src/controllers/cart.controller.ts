@@ -207,6 +207,18 @@ export class CartController {
   ) {
     return this.cartService.addItem(item, loggedInUserProfile);
   }
+
+  @del("/carts/remove-item/{itemId}")
+  @response(200, {
+    description: 'User shopping cart item removed.'
+  })
+  @authorize({allowedRoles: ['customer'], voters: [basicAuthorization]})
+  async removeItem (
+    @param.path.string('itemId') itemId: string,
+    @inject(SecurityBindings.USER) loggedInUserProfile: UserProfile,
+  ) {
+    return this.cartService.removeItem(itemId, loggedInUserProfile);
+  }
 }
 
 

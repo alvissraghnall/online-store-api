@@ -59,21 +59,21 @@ export class CartService {
     return savedCart;
   }
 
-  async removeItem (cartId: string, itemId: string): Promise<Cart> {
-    const cart = await this.cartRepository.findById(cartId, {
-      include: ['items'],
-    });
+  async removeItem (itemId: string, user: UserProfile): Promise<Cart> {
+    const cart = await this.findByUser(user, true);
 
     if (!cart) {
-      throw new HttpErrors.NotFound(`Cart not found: ${cartId}`);
+      throw new HttpErrors.NotFound(`Cart not found for user: ${user[securityId]}`);
     }
 
     // Find the index of the item to remove
     const itemIndex = cart.items?.findIndex((item) => item.productId === itemId);
 
-    if (itemIndex !== undefined && itemIndex >= 0) {
-      cart.items?.splice(itemIndex, 1); // Remove the item from the array
+    if (itemIndex < 0 || itemIndex === undefined) {
+      throw new HttpErrors.NotFound(`Product with ID: ${itemId} not on user cart`);
     }
+    
+    cart.items?.splice(itemIndex, 1); // Remove the item from the array
 
     const savedCart = await this.cartRepository.save(cart);
     savedCart.items = await this.includeProductRelation(savedCart.items);
