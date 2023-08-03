@@ -24,7 +24,7 @@ import {service} from '@loopback/core';
 import {authenticate} from '@loopback/authentication';
 import {authorize} from '@loopback/authorization';
 
-@authenticate('jwt')
+
 export class ProductController {
   constructor(
     @repository(ProductRepository)
@@ -45,6 +45,7 @@ export class ProductController {
     allowedRoles: ["admin"],
     voters: [basicAuthorization],
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -96,6 +97,7 @@ export class ProductController {
     content: {'application/json': {schema: CountSchema}},
   })
   @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -131,6 +133,7 @@ export class ProductController {
   @response(204, {
     description: 'Product PATCH success',
   })
+  @authenticate('jwt')
   @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async updateById(
     @param.path.string('id') id: string,
@@ -150,6 +153,7 @@ export class ProductController {
   @response(204, {
     description: 'Product PUT success',
   })
+  @authenticate('jwt')
   @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async replaceById(
     @param.path.string('id') id: string,
@@ -162,6 +166,7 @@ export class ProductController {
   @response(204, {
     description: 'Product DELETE success',
   })
+  @authenticate('jwt')
   @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.productService.deleteById(id);
