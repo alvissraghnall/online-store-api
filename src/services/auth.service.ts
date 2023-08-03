@@ -67,6 +67,10 @@ export class AuthService implements LbkUserService<User, Credentials> {
     };
   }
 
+  getCurrentUser(loggedInUserProfile: UserProfile) {
+    return this.userRepository.findById(loggedInUserProfile[securityId]);
+  }
+
   async createUser(userWithPassword: User): Promise<Omit<User, "password">> {
     const password = await this.passwordHasher.hashPassword(
       userWithPassword.password,

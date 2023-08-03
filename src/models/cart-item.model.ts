@@ -30,7 +30,7 @@ export class CartItem extends EntityWithTimestamps {
   @property({
     required: false,
   })
-  product: Product
+  product: Product;
 
   // Define well-known properties here
 

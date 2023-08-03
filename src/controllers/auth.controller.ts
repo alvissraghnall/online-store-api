@@ -141,9 +141,7 @@ export class AuthController {
         description: 'Return current user',
         content: {
           'application/json': {
-            schema: {
-              type: 'string',
-            },
+            schema: getModelSchemaRef(User),
           },
         },
       },
@@ -152,7 +150,7 @@ export class AuthController {
   async whoAmI(
     @inject(SecurityBindings.USER)
     loggedInUserProfile: UserProfile,
-  ): Promise<string> {
-    return loggedInUserProfile[securityId];
+  ): Promise<User> {
+    return this.authService.getCurrentUser(loggedInUserProfile);
   }
 }

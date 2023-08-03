@@ -45,6 +45,11 @@ export class Order extends EntityWithIdAndTimestamps {
   @property({
     type: 'string',
   })
+  address: string;
+
+  @property({
+    type: 'string',
+  })
   access_code: string;
 
   constructor(data?: Partial<Order>) {
