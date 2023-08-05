@@ -30,7 +30,9 @@ export class FavouritesController {
   @post('/favourites')
   @response(200, {
     description: 'User model instance',
-    content: {'application/json': {schema: getModelSchemaRef(User)}},
+    content: {'application/json': {schema: getModelSchemaRef(User, {
+      includeRelations: true
+    })}},
   })
   async add(
     @requestBody({

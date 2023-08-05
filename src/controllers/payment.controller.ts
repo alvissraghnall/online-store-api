@@ -92,7 +92,12 @@ export class PaymentController {
   @get('/payment/verify/{reference}')
   @response(200, {
     description: 'Order details',
-    content: {'application/json': {schema: getModelSchemaRef(Order) }},
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Order, {
+        exclude: ["access_code"]
+      }) 
+    }},
   })
   verify(
     @param.path.string('reference') reference: string,
