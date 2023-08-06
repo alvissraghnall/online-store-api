@@ -40,8 +40,8 @@ export class UserLoginAttemptsService {
           const remainingTime = LOCKOUT_TIME - (now - lastAttemptTime);
           throw new HttpErrors.Unauthorized(
             `Too many login attempts. Please try again in ${Math.ceil(
-              remainingTime / 60000,
-            )} minutes.`,
+              remainingTime / (60000 * 60),
+            )} hours.`,
           );
         } else {
           // If the lockout time has passed, reset login attempts

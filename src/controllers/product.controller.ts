@@ -157,7 +157,13 @@ export class ProductController {
   @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   async replaceById(
     @param.path.string('id') id: string,
-    @requestBody() product: Product,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Product),
+        },
+      },
+    }) product: Product,
   ): Promise<void> {
     await this.productRepository.replaceById(id, product);
   }
