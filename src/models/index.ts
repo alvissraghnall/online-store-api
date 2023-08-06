@@ -7,6 +7,7 @@ export * from './product-inventory.model';
 export * from './product.model';
 export * from './review.model';
 export * from './user-credentials.model';
+export * from './user-login-attempts.model';
 export * from './user.model';
 export * from './favourite.model';
 

@@ -12,6 +12,7 @@ import {
 import {field, ID, objectType} from '@loopback/graphql';
 import {UserCredentials, Product, Order, Review} from '.';
 import {Favourite} from './favourite.model';
+import {UserLoginAttempts} from './user-login-attempts.model';
 
 @model({
   settings: {
@@ -31,13 +32,6 @@ import {Favourite} from './favourite.model';
 })
 @objectType({description: 'Object representing user information'})
 export class User extends EntityWithIdAndTimestamps {
-  @field(type => ID)
-  @property({
-    type: 'string',
-    id: true,
-    generated: true
-  })
-  id: string;
 
   @field(() => String)
   @property({
@@ -132,6 +126,9 @@ export class User extends EntityWithIdAndTimestamps {
   @hasMany(() => Review)
   reviews: Review[];
 
+  @hasOne(() => UserLoginAttempts) // Define the hasOne relation for the user's login attempts
+  loginAttempts: UserLoginAttempts;
+
   // @hasOne(() => ShoppingCart)
   // shoppingCart: ShoppingCart;
 
@@ -143,4 +140,13 @@ export class User extends EntityWithIdAndTimestamps {
 export interface UserRelations {
   // describe navigational properties here
   favourites: Product[];
+
+  loginAttempts: UserLoginAttempts;
+
+  orders: Order[];
+
+  reviews: Review[];
+
+  userCredentials: UserCredentials;
+
 }

@@ -8,6 +8,7 @@ import {Cart, User} from '../models';
 import {Credentials, UserRepository} from '../repositories';
 import {BcryptHasher, PasswordHasher} from './hash-password.service';
 import {CartRepository} from '../repositories';
+import {UserLoginAttemptsService} from './user-login-attempts.service';
 
 @injectable(asService(AuthService))
 export class AuthService implements LbkUserService<User, Credentials> {
@@ -16,42 +17,51 @@ export class AuthService implements LbkUserService<User, Credentials> {
     public userRepository: UserRepository,
     @service(BcryptHasher)
     public passwordHasher: PasswordHasher,
+    @service(UserLoginAttemptsService)
+    private userLoginAttemptsService: UserLoginAttemptsService,
     @repository(CartRepository) public cartRepository: CartRepository,
     // @inject('services.EmailService')
     // public emailService: EmailService,
   ) { }
 
   async verifyCredentials(credentials: Credentials): Promise<User> {
+    // Check login attempts for the user
+
     const {email, password} = credentials;
     const invalidCredentialsError = 'Invalid email or password.';
+    let foundUser: User | null = null;
 
-    if (!email) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    try {
+      foundUser = await this.userRepository.findOne({
+        where: {email},
+      });
+      if (!foundUser) {
+        throw new HttpErrors.Unauthorized("User with email provided does not exist!");
+      }
+      await this.userLoginAttemptsService.checkLoginAttempts(foundUser.id);
+
+      const credentialsFound = await this.userRepository.findCredentials(
+        foundUser.id,
+      );
+      if (!credentialsFound) {
+        throw new HttpErrors.Unauthorized(invalidCredentialsError);
+      }
+
+      const passwordMatched = await this.passwordHasher.comparePassword(
+        password,
+        credentialsFound.password,
+      );
+
+      if (!passwordMatched) {
+        throw new HttpErrors.Unauthorized(invalidCredentialsError);
+      }
+
+      await this.userLoginAttemptsService.handleSuccessfulLogin(foundUser.id);
+      return foundUser;
+    } catch (error) {
+      foundUser && await this.userLoginAttemptsService.handleFailedLogin(foundUser.id);
+      throw error;
     }
-    const foundUser = await this.userRepository.findOne({
-      where: {email},
-    });
-    if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    const credentialsFound = await this.userRepository.findCredentials(
-      foundUser.id,
-    );
-    if (!credentialsFound) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    const passwordMatched = await this.passwordHasher.comparePassword(
-      password,
-      credentialsFound.password,
-    );
-
-    if (!passwordMatched) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    return foundUser;
   }
 
 
@@ -79,13 +89,13 @@ export class AuthService implements LbkUserService<User, Credentials> {
     const user = await this.userRepository.create(
       userWithPassword
     );
-    
+
     // const newUserCart: Pick<Partial<Cart>, 'items' | 'userId'> = { items: [] };
     // newUserCart.userId = newUser.id;
     // this.cartRepository.create(newUserCart);
     console.log(user);
     user.id = user.id.toString();
-    
+
     const newUserCart: Pick<Partial<Cart>, 'items' | 'userId'> = { items: [] };
     newUserCart.userId = user.id;
     this.cartRepository.create(newUserCart);

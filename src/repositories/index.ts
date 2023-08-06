@@ -8,3 +8,4 @@ export * from './order.repository';
 export * from './review.repository';
 export * from './cart-item.repository';
 export * from './favourite.repository';
+export * from './user-login-attempts.repository';
