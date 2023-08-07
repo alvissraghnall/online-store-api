@@ -80,7 +80,7 @@ export class PaymentService {
       data,
     ).catch(
       err => {
-        console.log(err.response.data);
+        console.log(err.response.data ?? err.request);
         throw new HttpErrors[503]("Something went wrong from our end.")
       }
     );
