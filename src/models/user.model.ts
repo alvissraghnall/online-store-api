@@ -92,7 +92,8 @@ export class User extends EntityWithIdAndTimestamps {
     required: false,
     jsonSchema: {
       minLength: 8,
-    }
+    },
+    hidden: true
   })
   password: string;
 

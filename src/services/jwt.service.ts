@@ -29,6 +29,7 @@ const verifyJWT = (token: string, secret: string, options?: jwt.VerifyOptions) =
 export interface UserJwtPayload {
   id: string;
   name: string;
+  email: string;
   roles: string;
 }
 
@@ -59,6 +60,7 @@ export class JWTService implements TokenService {
           [securityId]: decodedToken.id,
           name: decodedToken.name,
           id: decodedToken.id,
+          email: decodedToken.email,
           roles: decodedToken.roles,
         },
       );
@@ -80,6 +82,7 @@ export class JWTService implements TokenService {
       id: userProfile[securityId],
       name: userProfile.name,
       roles: userProfile.roles,
+      email: userProfile.email,
     };
     // Generate a JSON Web Token
     let token: string;
@@ -88,7 +91,7 @@ export class JWTService implements TokenService {
         expiresIn: Number(this.jwtExpiresIn),
       }) as string;
     } catch (error) {
-      throw new HttpErrors.Unauthorized(`Error encoding token : ${error}`);
+      throw new HttpErrors.Unauthorized(`Error encoding token : ${error.message}`);
     }
 
     return token;

@@ -39,23 +39,22 @@ export class PaymentService {
   constructor(
     @service(OrderService) private readonly orderService: OrderService,
     @service(CartService) private readonly cartService: CartService,
-    @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
     @repository(UserRepository) private readonly userRepository: UserRepository,
 
   ) { }
 
-  async makePayment(body: {amount: number, passedEmail?: string, items: CartItem[]}) {
+  async makePayment(body: {amount: number, items: CartItem[]}, loggedInUserProfile: UserProfile) {
     // const currUser = await this.userRepository.findById(
     //   this.loggedInUserProfile[securityId]
     // );
-    // const cart = await this.cartService.findByUser(this.loggedInUserProfile, false);
+    // const cart = await this.cartService.findByUser(loggedInUserProfile, false);
     const amount = Math.round(body.items.reduce(
       (acc, curr) => acc += (curr.product.price * curr.quantity),
       0
     ) * 777 * 100);  // 777 -> exchange rate; multiplying by 100 to get value in kobos.
     console.log(amount);
     const data: PaystackParams = {
-      email: body.passedEmail ?? this.loggedInUserProfile.email!,
+      email: loggedInUserProfile.email!,
       amount,
       currency: "NGN",
       callback_url: 'http://localhost:5173/payment-success',
@@ -65,11 +64,11 @@ export class PaymentService {
           {
             display_name: 'name',
             variable_name: 'name',
-            value: this.loggedInUserProfile.name
+            value: loggedInUserProfile.name
           }, {
             display_name: 'email',
             variable_name: 'email',
-            value: this.loggedInUserProfile.email
+            value: loggedInUserProfile.email
           },
         ]
       }
@@ -80,7 +79,7 @@ export class PaymentService {
       data,
     ).catch(
       err => {
-        console.log(err.response.data ?? err.request);
+        console.log(err.response?.data ?? err.request);
         throw new HttpErrors[503]("Something went wrong from our end.")
       }
     );
@@ -101,7 +100,7 @@ export class PaymentService {
       // );
       console.log(newOrder.products);
 
-      await this.orderService.create(newOrder, this.loggedInUserProfile);
+      await this.orderService.create(newOrder, loggedInUserProfile);
 
       // omit(res.data.data, ['reference']);
 

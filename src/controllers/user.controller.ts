@@ -20,7 +20,7 @@ export class UserController {
   @response(200, {
     description: 'User PUT success',
     content: {'application/json': {schema: getModelSchemaRef(User, {
-      exclude: ["password"],
+      exclude: ["password", "confirmPassword"],
       includeRelations: false
     })}},
   })
@@ -30,7 +30,9 @@ export class UserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(User),
+          schema: getModelSchemaRef(User, {
+            exclude: ["password", "confirmPassword"]
+          }),
         },
       },
     }) user: User,

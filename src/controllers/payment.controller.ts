@@ -50,7 +50,7 @@ const paystackTxnInitResponseSchema: SchemaObject = {
 export class PaymentController {
   constructor(
     @service(PaymentService) private paymentService: PaymentService,
-    @inject(SecurityBindings.USER) private loggedInUserProfile: UserProfile,
+    @inject(SecurityBindings.USER) private readonly loggedInUserProfile: UserProfile,
   ) {}
 
   @post('/payment')
@@ -84,9 +84,10 @@ export class PaymentController {
           }
         }
       }
-    }) body: {amount: number, passedEmail?: string, items: CartItem[]}
+    }) body: {amount: number, items: CartItem[]}
   ) {
-    return this.paymentService.makePayment(body);
+    console.log(this.loggedInUserProfile);
+    return this.paymentService.makePayment(body, this.loggedInUserProfile);
   }
 
   @get('/payment/verify/{reference}')

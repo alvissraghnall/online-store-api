@@ -74,6 +74,7 @@ export class AuthService implements LbkUserService<User, Credentials> {
       name: `${user.firstName} ${user.lastName}`,
       id: user.id,
       roles: user.roles,
+      email: user.email
     };
   }
 
