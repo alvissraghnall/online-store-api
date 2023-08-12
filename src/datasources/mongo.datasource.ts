@@ -41,7 +41,7 @@ export class MongoDataSource extends juggler.DataSource {
     @inject('datasources.config.mongo', {optional: true})
     dsConfig: AnyObject = process.env.NODE_ENV === "production" ? productionConfig : config,
   ) {
-    console.log("ENV: ", process.env.NODE_ENV);
+    console.log("Node ENV: ", process.env.NODE_ENV);
     super(updateConfig(dsConfig));
   }
 
