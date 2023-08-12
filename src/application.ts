@@ -104,6 +104,7 @@ export class App extends BootMixin(
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
     console.log("ENV: ", process.env.JWT_SECRET);
+    console.log("ENV: ", process.env.NODE_ENV);
     const secret =
       process.env.JWT_SECRET ?? crypto.randomBytes(32).toString('hex');
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(secret);
