@@ -14,10 +14,20 @@ const config = {
   useUnifiedTopology: true,
 };
 
+const productionConfig = {
+  name: 'mongo',
+  connector: 'mongodb',
+  url: process.env.SHOPPING_APP_MONGO_URI,
+  database: process.env.SHOPPING_APP_MONGO_DB,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}
+
 function updateConfig(dsConfig: AnyObject) {
   if (process.env.KUBERNETES_SERVICE_HOST) {
-    dsConfig.host = process.env.SHOPPING_APP_MONGODB_SERVICE_HOST;
-    dsConfig.port = +process.env.SHOPPING_APP_MONGODB_SERVICE_PORT!;
+    // dsConfig.host = process.env.SHOPPING_APP_MONGODB_SERVICE_HOST;
+    dsConfig.url = process.env.SHOPPING_APP_MONGO_URI;
+    // dsConfig.port = +process.env.SHOPPING_APP_MONGODB_SERVICE_PORT!;
   }
   return dsConfig;
 }
@@ -29,7 +39,7 @@ export class MongoDataSource extends juggler.DataSource {
 
   constructor(
     @inject('datasources.config.mongo', {optional: true})
-    dsConfig: AnyObject = config,
+    dsConfig: AnyObject = process.env.NODE_ENV === "production" ? productionConfig : config,
   ) {
     super(updateConfig(dsConfig));
   }
